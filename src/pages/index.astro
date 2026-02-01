@@ -1,0 +1,88 @@
+---
+/**
+ * Career Website - Morphing Career Timeline
+ *
+ * A seamless journey through 15+ years of career evolution.
+ * Each era has a structurally unique design that morphs as you scroll.
+ *
+ * No static transition zones - elements transform continuously.
+ */
+
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import FlashEra from '../components/eras/FlashEra.astro';
+import DeveloperEra from '../components/eras/DeveloperEra.astro';
+import ExecutiveEra from '../components/eras/ExecutiveEra.astro';
+import AIEra from '../components/eras/AIEra.astro';
+import MorphingNav from '../components/morphing/MorphingNav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="Diogo Reus — Designer, Developer, Executive, AI Builder"
+  description="15+ years transforming education through technology. From Flash animations to GPT-5 pipelines. Designer by education, developer by passion, executive by challenge."
+>
+  <!-- Scroll progress indicator -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Hero Section -->
+  <Hero />
+
+  <!-- Flash Era (2010-2012) - Wild, 3D, Winamp-style -->
+  <FlashEra />
+
+  <!-- Developer Era (2012-2017) - IDE aesthetic -->
+  <DeveloperEra />
+
+  <!-- Executive Era (2017-2024) - shadcn/Linear style -->
+  <ExecutiveEra />
+
+  <!-- AI Era (2025+) - Experimental, particles as UI -->
+  <AIEra />
+
+  <!-- Footer -->
+  <Footer />
+
+  <!-- Morphing Navigation - Persistent, transforms as you scroll -->
+  <MorphingNav />
+</Layout>
+
+<style is:global>
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Scroll progress bar */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--era-accent, #ffffff),
+      var(--era-accent-secondary, #888888)
+    );
+    transform-origin: left;
+    transform: scaleX(0);
+    z-index: 9999;
+    pointer-events: none;
+    transition: background 0.5s ease;
+  }
+</style>
+
+<script>
+  import { initEraMorph } from '../scripts/era-morph';
+
+  // Initialize the morphing system when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    initEraMorph();
+  });
+
+  // If the page is already loaded (e.g., client-side navigation)
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    initEraMorph();
+  }
+</script>

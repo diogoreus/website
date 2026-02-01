@@ -1,0 +1,523 @@
+---
+/**
+ * WinampPlayer - Decorative Winamp-style music player element.
+ * Purely visual, adds to the Flash era aesthetic.
+ */
+
+interface Props {
+  trackName?: string;
+  artist?: string;
+  class?: string;
+}
+
+const { trackName = 'career.mp3', artist = 'Diogo Reus', class: className = '' } = Astro.props;
+---
+
+<div class={`winamp-player ${className}`}>
+  <!-- Title bar -->
+  <div class="winamp-titlebar">
+    <div class="titlebar-left">
+      <span class="winamp-logo">&#9654;</span>
+      <span class="titlebar-text">WINAMP</span>
+    </div>
+    <div class="titlebar-buttons">
+      <button class="title-btn minimize" aria-label="Minimize">_</button>
+      <button class="title-btn maximize" aria-label="Maximize">&#9633;</button>
+      <button class="title-btn close" aria-label="Close">&#215;</button>
+    </div>
+  </div>
+
+  <!-- Display area -->
+  <div class="winamp-display">
+    <div class="display-inner">
+      <!-- Bitrate/kHz info -->
+      <div class="display-info">
+        <span class="info-item bitrate">320</span>
+        <span class="info-label">kbps</span>
+        <span class="info-item khz">44</span>
+        <span class="info-label">kHz</span>
+        <span class="info-item stereo">stereo</span>
+      </div>
+
+      <!-- Track time -->
+      <div class="display-time">
+        <span class="time-current">00:00</span>
+        <span class="time-separator">/</span>
+        <span class="time-total">15:00</span>
+      </div>
+
+      <!-- Scrolling track name -->
+      <div class="display-marquee">
+        <div class="marquee-content">
+          <span>{artist} - {trackName}</span>
+          <span class="marquee-spacer">***</span>
+          <span>{artist} - {trackName}</span>
+        </div>
+      </div>
+
+      <!-- Spectrum analyzer -->
+      <div class="spectrum-analyzer">
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div class="spectrum-bar" style={`--delay: ${i * 0.05}s; --height: ${30 + Math.random() * 70}%`}></div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Seek bar -->
+  <div class="winamp-seekbar">
+    <div class="seek-track">
+      <div class="seek-progress"></div>
+      <div class="seek-handle"></div>
+    </div>
+  </div>
+
+  <!-- Control buttons -->
+  <div class="winamp-controls">
+    <button class="control-btn prev" aria-label="Previous">
+      <span>&#9664;&#9664;</span>
+    </button>
+    <button class="control-btn play active" aria-label="Play">
+      <span>&#9654;</span>
+    </button>
+    <button class="control-btn pause" aria-label="Pause">
+      <span>&#10074;&#10074;</span>
+    </button>
+    <button class="control-btn stop" aria-label="Stop">
+      <span>&#9632;</span>
+    </button>
+    <button class="control-btn next" aria-label="Next">
+      <span>&#9654;&#9654;</span>
+    </button>
+    <button class="control-btn eject" aria-label="Eject">
+      <span>&#9167;</span>
+    </button>
+  </div>
+
+  <!-- Volume and balance -->
+  <div class="winamp-sliders">
+    <div class="slider-group">
+      <span class="slider-label">VOL</span>
+      <div class="slider-track">
+        <div class="slider-fill" style="width: 75%"></div>
+        <div class="slider-notches">
+          {Array.from({ length: 10 }).map(() => (
+            <div class="notch"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="slider-group">
+      <span class="slider-label">BAL</span>
+      <div class="slider-track balance">
+        <div class="slider-center-marker"></div>
+        <div class="slider-fill balance-fill" style="width: 50%; left: 25%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQ button -->
+  <div class="winamp-extras">
+    <button class="extra-btn eq active">EQ</button>
+    <button class="extra-btn pl">PL</button>
+  </div>
+</div>
+
+<style>
+  .winamp-player {
+    width: 280px;
+    background: linear-gradient(180deg, #3a3a4a 0%, #2a2a38 50%, #1a1a25 100%);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    user-select: none;
+  }
+
+  /* Title bar */
+  .winamp-titlebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    background: linear-gradient(180deg, #4a4a5a 0%, #3a3a48 100%);
+    border-radius: 4px 4px 0 0;
+  }
+
+  .titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .winamp-logo {
+    color: #00ff00;
+    font-size: 0.6rem;
+    filter: drop-shadow(0 0 3px #00ff00);
+  }
+
+  .titlebar-text {
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .titlebar-buttons {
+    display: flex;
+    gap: 3px;
+  }
+
+  .title-btn {
+    width: 14px;
+    height: 14px;
+    border: none;
+    border-radius: 2px;
+    font-size: 0.6rem;
+    line-height: 1;
+    cursor: pointer;
+    background: #3a3a48;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .title-btn:hover {
+    background: #4a4a58;
+    color: #fff;
+  }
+
+  .title-btn.close:hover {
+    background: #ff4444;
+  }
+
+  /* Display area */
+  .winamp-display {
+    background: #000000;
+    border-radius: 4px;
+    margin: 4px;
+    padding: 8px;
+    border: 2px inset #1a1a25;
+  }
+
+  .display-inner {
+    position: relative;
+  }
+
+  .display-info {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .info-item {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+  }
+
+  .info-label {
+    color: #008800;
+    font-size: 0.55rem;
+  }
+
+  .info-item.stereo {
+    margin-left: auto;
+    color: #00ff00;
+    font-size: 0.55rem;
+  }
+
+  .display-time {
+    color: #00ff00;
+    font-size: 1.1rem;
+    text-shadow: 0 0 8px #00ff00;
+    margin-bottom: 6px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .time-separator,
+  .time-total {
+    color: #008800;
+  }
+
+  /* Scrolling marquee */
+  .display-marquee {
+    overflow: hidden;
+    background: #001100;
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+  }
+
+  .marquee-content {
+    display: flex;
+    gap: 1rem;
+    white-space: nowrap;
+    color: #00ff00;
+    font-size: 0.65rem;
+    animation: marquee 10s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .marquee-spacer {
+    color: #008800;
+  }
+
+  /* Spectrum analyzer */
+  .spectrum-analyzer {
+    display: flex;
+    gap: 2px;
+    height: 24px;
+    align-items: flex-end;
+    background: #001100;
+    padding: 2px;
+    border-radius: 2px;
+  }
+
+  .spectrum-bar {
+    flex: 1;
+    background: linear-gradient(0deg, #00ff00 0%, #88ff00 50%, #ffff00 100%);
+    border-radius: 1px;
+    animation: spectrum 0.5s ease-in-out infinite alternate;
+    animation-delay: var(--delay);
+    height: var(--height);
+    box-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+  }
+
+  @keyframes spectrum {
+    0% { height: 20%; }
+    100% { height: var(--height); }
+  }
+
+  /* Seek bar */
+  .winamp-seekbar {
+    padding: 4px 8px;
+  }
+
+  .seek-track {
+    position: relative;
+    height: 8px;
+    background: linear-gradient(180deg, #1a1a25 0%, #2a2a38 100%);
+    border-radius: 4px;
+    border: 1px inset #0a0a10;
+  }
+
+  .seek-progress {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 30%;
+    background: linear-gradient(180deg, #00cc00 0%, #008800 100%);
+    border-radius: 3px;
+    animation: seek-move 15s linear infinite;
+  }
+
+  @keyframes seek-move {
+    0% { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  .seek-handle {
+    position: absolute;
+    left: 30%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(180deg, #4a4a5a 0%, #3a3a48 100%);
+    border-radius: 50%;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 1px 3px rgba(0, 0, 0, 0.5);
+    animation: handle-move 15s linear infinite;
+  }
+
+  @keyframes handle-move {
+    0% { left: 0%; }
+    100% { left: 100%; }
+  }
+
+  /* Control buttons */
+  .winamp-controls {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .control-btn {
+    width: 28px;
+    height: 20px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #4a4a5a 0%, #2a2a38 100%);
+    color: #888;
+    font-size: 0.6rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 2px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease;
+  }
+
+  .control-btn:hover {
+    background: linear-gradient(180deg, #5a5a6a 0%, #3a3a48 100%);
+    color: #fff;
+  }
+
+  .control-btn:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.3),
+      0 1px 1px rgba(0, 0, 0, 0.2);
+  }
+
+  .control-btn.active,
+  .control-btn.play {
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+  }
+
+  /* Sliders */
+  .winamp-sliders {
+    display: flex;
+    gap: 12px;
+    padding: 4px 12px;
+  }
+
+  .slider-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .slider-label {
+    color: #888;
+    font-size: 0.55rem;
+    width: 20px;
+  }
+
+  .slider-track {
+    flex: 1;
+    height: 6px;
+    background: linear-gradient(180deg, #1a1a25 0%, #2a2a38 100%);
+    border-radius: 3px;
+    border: 1px inset #0a0a10;
+    position: relative;
+  }
+
+  .slider-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, #00cc00 0%, #008800 100%);
+    border-radius: 2px;
+  }
+
+  .slider-track.balance .slider-fill {
+    left: auto;
+  }
+
+  .slider-center-marker {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    background: #3a3a48;
+  }
+
+  .slider-notches {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    inset: 0;
+    padding: 0 2px;
+  }
+
+  .notch {
+    width: 1px;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  /* Extra buttons */
+  .winamp-extras {
+    display: flex;
+    gap: 4px;
+    padding: 4px 12px 8px;
+    justify-content: flex-end;
+  }
+
+  .extra-btn {
+    padding: 2px 8px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #3a3a48 0%, #2a2a38 100%);
+    color: #666;
+    font-size: 0.55rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .extra-btn:hover {
+    color: #888;
+  }
+
+  .extra-btn.active {
+    background: linear-gradient(180deg, #2a2a38 0%, #1a1a25 100%);
+    color: #00ff00;
+    text-shadow: 0 0 5px #00ff00;
+    box-shadow:
+      inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .winamp-player {
+      width: 100%;
+      max-width: 280px;
+    }
+  }
+</style>
+
+<script>
+  // Add some interactivity
+  const playBtn = document.querySelector('.winamp-player .control-btn.play');
+  const pauseBtn = document.querySelector('.winamp-player .control-btn.pause');
+  const stopBtn = document.querySelector('.winamp-player .control-btn.stop');
+
+  if (playBtn && pauseBtn && stopBtn) {
+    playBtn.addEventListener('click', () => {
+      playBtn.classList.add('active');
+      pauseBtn.classList.remove('active');
+    });
+
+    pauseBtn.addEventListener('click', () => {
+      pauseBtn.classList.add('active');
+      playBtn.classList.remove('active');
+    });
+
+    stopBtn.addEventListener('click', () => {
+      playBtn.classList.remove('active');
+      pauseBtn.classList.remove('active');
+    });
+  }
+</script>

@@ -1,0 +1,457 @@
+---
+/**
+ * MorphingNav - A persistent navigation that transforms its appearance
+ * as the user scrolls through different eras.
+ *
+ * Flash Era:      Glossy orbs with neon glow, circular arrangement
+ * Developer Era:  Flat rectangles with code brackets
+ * Executive Era:  Minimal circles with subtle borders
+ * AI Era:         Glowing particles with pulse animation
+ */
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const navItems = [
+  { id: 'hero', label: 'Home', href: '#hero' },
+  { id: 'era-flash', label: 'Flash', href: '#era-flash' },
+  { id: 'era-developer', label: 'Developer', href: '#era-developer' },
+  { id: 'era-executive', label: 'Executive', href: '#era-executive' },
+  { id: 'era-ai', label: 'AI', href: '#era-ai' },
+];
+---
+
+<nav id="morphing-nav" class={`morphing-nav ${className}`} aria-label="Section navigation">
+  <div class="nav-track">
+    {navItems.map((item, index) => (
+      <a
+        href={item.href}
+        class="nav-item"
+        data-section={item.id}
+        data-index={index}
+        aria-label={`Navigate to ${item.label}`}
+      >
+        <!-- SVG container for morphing shapes -->
+        <svg class="nav-shape" viewBox="0 0 40 40" aria-hidden="true">
+          <!-- Flash Era: Glossy orb -->
+          <defs>
+            <radialGradient id={`orb-gradient-${index}`} cx="30%" cy="30%">
+              <stop offset="0%" stop-color="#00ffff" />
+              <stop offset="100%" stop-color="#ff00ff" />
+            </radialGradient>
+            <filter id={`glow-${index}`}>
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Base shape that morphs -->
+          <circle
+            class="nav-shape-base"
+            cx="20"
+            cy="20"
+            r="8"
+            fill={`url(#orb-gradient-${index})`}
+            filter={`url(#glow-${index})`}
+          />
+
+          <!-- Shine overlay for Flash era -->
+          <ellipse
+            class="nav-shine"
+            cx="17"
+            cy="17"
+            rx="3"
+            ry="2"
+            fill="rgba(255,255,255,0.6)"
+            transform="rotate(-30 17 17)"
+          />
+
+          <!-- Bracket decorations for Developer era -->
+          <g class="nav-brackets" opacity="0">
+            <path d="M8 12 L4 20 L8 28" stroke="#58a6ff" stroke-width="2" fill="none" />
+            <path d="M32 12 L36 20 L32 28" stroke="#58a6ff" stroke-width="2" fill="none" />
+          </g>
+
+          <!-- Outer ring for Executive era -->
+          <circle
+            class="nav-ring"
+            cx="20"
+            cy="20"
+            r="10"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            stroke-width="1"
+            opacity="0"
+          />
+
+          <!-- Pulse effect for AI era -->
+          <circle
+            class="nav-pulse"
+            cx="20"
+            cy="20"
+            r="8"
+            fill="none"
+            stroke="#a855f7"
+            stroke-width="1"
+            opacity="0"
+          />
+        </svg>
+
+        <!-- Tooltip -->
+        <span class="nav-tooltip">{item.label}</span>
+      </a>
+    ))}
+  </div>
+
+  <!-- Active section indicator line -->
+  <div class="nav-indicator" aria-hidden="true"></div>
+</nav>
+
+<style>
+  .morphing-nav {
+    position: fixed;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .morphing-nav.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-track {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .nav-item {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .nav-item:hover {
+    transform: scale(1.15);
+  }
+
+  .nav-item.active {
+    transform: scale(1.2);
+  }
+
+  .nav-shape {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Base shape transitions */
+  .nav-shape-base {
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center;
+  }
+
+  .nav-shine {
+    transition: opacity 0.5s ease;
+  }
+
+  .nav-brackets {
+    transition: opacity 0.5s ease;
+  }
+
+  .nav-ring {
+    transition: all 0.5s ease;
+  }
+
+  .nav-pulse {
+    transition: opacity 0.5s ease;
+  }
+
+  /* Tooltip */
+  .nav-tooltip {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.35rem 0.75rem;
+    margin-right: 0.75rem;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--era-border, rgba(255, 255, 255, 0.1));
+    border-radius: 6px;
+    font-family: var(--era-font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.7rem;
+    color: var(--era-text, #ffffff);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(-50%) translateX(5px);
+  }
+
+  .nav-item:hover .nav-tooltip {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Active indicator */
+  .nav-indicator {
+    position: absolute;
+    left: -8px;
+    width: 2px;
+    height: 40px;
+    background: var(--era-accent, #ffffff);
+    border-radius: 1px;
+    transition: top 0.3s ease, background 0.5s ease;
+    box-shadow: 0 0 10px var(--era-accent, #ffffff);
+  }
+
+  /* Era-specific styles applied via JavaScript */
+
+  /* Flash Era Styles */
+  :global([data-morph-era="flash"]) .nav-shape-base {
+    fill: url(#orb-gradient-0);
+  }
+
+  :global([data-morph-era="flash"]) .nav-shine {
+    opacity: 0.7;
+  }
+
+  :global([data-morph-era="flash"]) .nav-brackets {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="flash"]) .nav-ring {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="flash"]) .nav-pulse {
+    opacity: 0;
+  }
+
+  /* Developer Era Styles */
+  :global([data-morph-era="developer"]) .nav-shape-base {
+    fill: #58a6ff;
+    rx: 4;
+    r: 6;
+  }
+
+  :global([data-morph-era="developer"]) .nav-shine {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="developer"]) .nav-brackets {
+    opacity: 0.8;
+  }
+
+  :global([data-morph-era="developer"]) .nav-ring {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="developer"]) .nav-pulse {
+    opacity: 0;
+  }
+
+  /* Executive Era Styles */
+  :global([data-morph-era="executive"]) .nav-shape-base {
+    fill: transparent;
+    stroke: #0070f3;
+    stroke-width: 2;
+    r: 6;
+  }
+
+  :global([data-morph-era="executive"]) .nav-shine {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="executive"]) .nav-brackets {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="executive"]) .nav-ring {
+    opacity: 0.5;
+    stroke: rgba(0, 112, 243, 0.3);
+  }
+
+  :global([data-morph-era="executive"]) .nav-pulse {
+    opacity: 0;
+  }
+
+  /* AI Era Styles */
+  :global([data-morph-era="ai"]) .nav-shape-base {
+    fill: #a855f7;
+    r: 5;
+    filter: url(#glow-0);
+  }
+
+  :global([data-morph-era="ai"]) .nav-shine {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="ai"]) .nav-brackets {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="ai"]) .nav-ring {
+    opacity: 0;
+  }
+
+  :global([data-morph-era="ai"]) .nav-pulse {
+    opacity: 1;
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      r: 8;
+      opacity: 0.8;
+    }
+    100% {
+      r: 18;
+      opacity: 0;
+    }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .morphing-nav {
+      right: 1rem;
+    }
+
+    .nav-item {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-tooltip {
+      display: none;
+    }
+
+    .nav-track {
+      gap: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const morphingNav = document.getElementById('morphing-nav');
+  const navItems = document.querySelectorAll('.nav-item');
+  const navIndicator = document.querySelector('.nav-indicator');
+  const sections = ['hero', 'era-flash', 'era-developer', 'era-executive', 'era-ai'];
+
+  // Era thresholds (percentage of total scroll)
+  const eraThresholds = {
+    hero: 0,
+    flash: 0.15,
+    developer: 0.35,
+    executive: 0.55,
+    ai: 0.75
+  };
+
+  // Show/hide nav based on hero visibility
+  const heroSection = document.getElementById('hero');
+
+  if (heroSection && morphingNav) {
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        const heroVisible = entries[0].isIntersecting && entries[0].intersectionRatio > 0.5;
+        if (heroVisible) {
+          morphingNav.classList.remove('visible');
+        } else {
+          morphingNav.classList.add('visible');
+        }
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+
+    heroObserver.observe(heroSection);
+  }
+
+  // Track active section and update nav
+  function updateActiveSection() {
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollProgress = docHeight > 0 ? scrollY / docHeight : 0;
+
+    // Determine current era based on scroll progress
+    let currentEra = 'hero';
+    if (scrollProgress >= eraThresholds.ai) {
+      currentEra = 'ai';
+    } else if (scrollProgress >= eraThresholds.executive) {
+      currentEra = 'executive';
+    } else if (scrollProgress >= eraThresholds.developer) {
+      currentEra = 'developer';
+    } else if (scrollProgress >= eraThresholds.flash) {
+      currentEra = 'flash';
+    }
+
+    // Update morph era attribute on document
+    document.documentElement.setAttribute('data-morph-era', currentEra);
+
+    // Update active nav item
+    navItems.forEach((item, index) => {
+      const sectionId = item.getAttribute('data-section');
+      const isActive = sectionId === (currentEra === 'hero' ? 'hero' : `era-${currentEra}`);
+
+      item.classList.toggle('active', isActive);
+
+      if (isActive && navIndicator) {
+        const itemTop = (item as HTMLElement).offsetTop;
+        (navIndicator as HTMLElement).style.top = `${itemTop}px`;
+      }
+    });
+  }
+
+  // Throttled scroll handler
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateActiveSection();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Initial update
+  updateActiveSection();
+
+  // Click handlers for smooth scroll
+  navItems.forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = item.getAttribute('href');
+      if (href) {
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    });
+  });
+</script>

@@ -1,0 +1,440 @@
+---
+/**
+ * FileExplorer - VS Code-style file tree sidebar.
+ */
+
+import { FolderOpen, Folder, File, Package, Settings, FileText, BookOpen, FileCode2 } from '@lucide/astro';
+
+interface FileItem {
+  name: string;
+  type: 'file' | 'folder';
+  children?: FileItem[];
+  icon?: string;
+  active?: boolean;
+  open?: boolean;
+}
+
+interface Props {
+  files: FileItem[];
+  title?: string;
+  class?: string;
+}
+
+const { files, title = 'EXPLORER', class: className = '' } = Astro.props;
+
+// Icon mapping for file types
+const getFileIcon = (icon?: string) => {
+  switch (icon) {
+    case 'package': return 'package';
+    case 'typescript': return 'typescript';
+    case 'settings': return 'settings';
+    case 'filetext': return 'filetext';
+    case 'bookopen': return 'bookopen';
+    default: return 'file';
+  }
+};
+---
+
+<aside class={`file-explorer ${className}`}>
+  <div class="explorer-header">
+    <span class="header-title">{title}</span>
+    <div class="header-actions">
+      <button class="header-btn" aria-label="New file">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 1v12M1 7h12"/>
+        </svg>
+      </button>
+      <button class="header-btn" aria-label="New folder">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M1 3h4l1 1h7v8H1V3z"/>
+          <path d="M7 6v4M5 8h4"/>
+        </svg>
+      </button>
+      <button class="header-btn" aria-label="Collapse all">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M3 5l4 4 4-4"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="explorer-tree">
+    <div class="tree-section">
+      <button class="section-header expanded">
+        <svg class="chevron" width="10" height="10" viewBox="0 0 10 10">
+          <path d="M3 2l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span class="section-name">CAREER</span>
+      </button>
+      <div class="section-content">
+        {files.map(function renderItem(item) {
+          if (item.type === 'folder') {
+            return (
+              <div class="tree-folder">
+                <button class={`folder-header ${item.open ? 'expanded' : ''}`}>
+                  <svg class="chevron" width="10" height="10" viewBox="0 0 10 10">
+                    <path d="M3 2l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                  <span class="folder-icon">
+                    {item.open ? <FolderOpen size={14} /> : <Folder size={14} />}
+                  </span>
+                  <span class="folder-name">{item.name}</span>
+                </button>
+                {item.open && item.children && (
+                  <div class="folder-content">
+                    {item.children.map(renderItem)}
+                  </div>
+                )}
+              </div>
+            );
+          }
+          return (
+            <button class={`tree-file ${item.active ? 'active' : ''}`}>
+              <span class="file-icon">
+                {item.icon === 'package' && <Package size={14} />}
+                {item.icon === 'typescript' && <FileCode2 size={14} />}
+                {item.icon === 'settings' && <Settings size={14} />}
+                {item.icon === 'filetext' && <FileText size={14} />}
+                {item.icon === 'bookopen' && <BookOpen size={14} />}
+                {(!item.icon || item.icon === 'file') && <File size={14} />}
+              </span>
+              <span class="file-name">{item.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+
+  <div class="explorer-footer">
+    <div class="outline-section">
+      <button class="section-header">
+        <svg class="chevron" width="10" height="10" viewBox="0 0 10 10">
+          <path d="M3 2l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span class="section-name">OUTLINE</span>
+      </button>
+    </div>
+    <div class="timeline-section">
+      <button class="section-header">
+        <svg class="chevron" width="10" height="10" viewBox="0 0 10 10">
+          <path d="M3 2l4 3-4 3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span class="section-name">TIMELINE</span>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .file-explorer {
+    width: 220px;
+    background: #252526;
+    border-right: 1px solid #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8rem;
+    color: #cccccc;
+    user-select: none;
+  }
+
+  /* Header */
+  .explorer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .header-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #bbbbbb;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .file-explorer:hover .header-actions {
+    opacity: 1;
+  }
+
+  .header-btn {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #8b8b8b;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .header-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #cccccc;
+  }
+
+  .header-btn svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.5;
+  }
+
+  /* Tree structure */
+  .explorer-tree {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .tree-section {
+    padding-bottom: 8px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 6px 8px;
+    background: transparent;
+    border: none;
+    color: #bbbbbb;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease;
+  }
+
+  .section-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .section-header .chevron {
+    transition: transform 0.15s ease;
+  }
+
+  .section-header.expanded .chevron {
+    transform: rotate(90deg);
+  }
+
+  .section-content {
+    padding-left: 8px;
+  }
+
+  /* Folders */
+  .tree-folder {
+    margin-bottom: 2px;
+  }
+
+  .folder-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    color: #cccccc;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+
+  .folder-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .folder-header .chevron {
+    transition: transform 0.15s ease;
+    color: #8b8b8b;
+  }
+
+  .folder-header.expanded .chevron {
+    transform: rotate(90deg);
+  }
+
+  .folder-icon {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    color: #dcad5b;
+  }
+
+  .folder-name {
+    flex: 1;
+  }
+
+  .folder-content {
+    padding-left: 16px;
+    animation: folder-open 0.15s ease;
+  }
+
+  @keyframes folder-open {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Files */
+  .tree-file {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 8px;
+    padding-left: 24px;
+    background: transparent;
+    border: none;
+    color: #cccccc;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+
+  .tree-file:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .tree-file.active {
+    background: #37373d;
+  }
+
+  .tree-file.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #0078d4;
+  }
+
+  .file-icon {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    color: #8b949e;
+  }
+
+  .file-icon :global(svg) {
+    color: inherit;
+  }
+
+  /* TypeScript files */
+  .tree-file:has(.file-icon > :global(svg[data-lucide="file-code-2"])) .file-icon {
+    color: #3178c6;
+  }
+
+  /* Package files */
+  .tree-file:has(.file-icon > :global(svg[data-lucide="package"])) .file-icon {
+    color: #cb3837;
+  }
+
+  /* Settings files */
+  .tree-file:has(.file-icon > :global(svg[data-lucide="settings"])) .file-icon {
+    color: #8b949e;
+  }
+
+  /* Markdown files */
+  .tree-file:has(.file-icon > :global(svg[data-lucide="file-text"])) .file-icon,
+  .tree-file:has(.file-icon > :global(svg[data-lucide="book-open"])) .file-icon {
+    color: #3fb950;
+  }
+
+  .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Footer sections */
+  .explorer-footer {
+    border-top: 1px solid #1e1e1e;
+    padding: 4px 0;
+  }
+
+  .outline-section,
+  .timeline-section {
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  /* Scrollbar styling */
+  .explorer-tree::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .explorer-tree::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .explorer-tree::-webkit-scrollbar-thumb {
+    background: rgba(121, 121, 121, 0.4);
+    border-radius: 5px;
+    border: 2px solid #252526;
+  }
+
+  .explorer-tree::-webkit-scrollbar-thumb:hover {
+    background: rgba(121, 121, 121, 0.6);
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .file-explorer {
+      width: 180px;
+    }
+
+    .folder-header,
+    .tree-file {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  // Toggle folder open/close
+  const folderHeaders = document.querySelectorAll('.folder-header');
+
+  folderHeaders.forEach((header) => {
+    header.addEventListener('click', () => {
+      header.classList.toggle('expanded');
+      const content = header.nextElementSibling as HTMLElement;
+      if (content && content.classList.contains('folder-content')) {
+        content.style.display = header.classList.contains('expanded') ? 'block' : 'none';
+      }
+    });
+  });
+
+  // Toggle section expand/collapse
+  const sectionHeaders = document.querySelectorAll('.section-header');
+
+  sectionHeaders.forEach((header) => {
+    header.addEventListener('click', () => {
+      header.classList.toggle('expanded');
+    });
+  });
+</script>

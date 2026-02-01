@@ -1,0 +1,139 @@
+---
+/**
+ * ParticleText - Text that emerges from particle noise
+ * Characters materialize from scattered particles when in view
+ */
+
+interface Props {
+  text: string;
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'span' | 'p';
+  class?: string;
+  delay?: number;
+}
+
+const { text, tag: Tag = 'span', class: className = '', delay = 0 } = Astro.props;
+---
+
+<Tag
+  class={`particle-text ${className}`}
+  data-text={text}
+  style={`--delay: ${delay}ms`}
+>
+  <span class="particle-text__content">{text}</span>
+  <span class="particle-text__particles" aria-hidden="true">
+    {text.split('').map((char, i) => (
+      <span
+        class="particle-text__char"
+        style={`--char-index: ${i}; --char-delay: ${i * 30}ms`}
+      >
+        {char === ' ' ? '\u00A0' : char}
+      </span>
+    ))}
+  </span>
+</Tag>
+
+<style>
+  .particle-text {
+    position: relative;
+    display: inline-block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: transparent;
+  }
+
+  .particle-text__content {
+    visibility: hidden;
+  }
+
+  .particle-text__particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+  }
+
+  .particle-text__char {
+    display: inline-block;
+    color: #f0f0f0;
+    opacity: 0;
+    transform:
+      translateX(calc((var(--char-index) % 3 - 1) * 40px))
+      translateY(calc(sin(var(--char-index) * 0.5) * 30px))
+      scale(0);
+    filter: blur(10px);
+    animation: particle-materialize 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--delay) + var(--char-delay));
+    text-shadow:
+      0 0 20px rgba(168, 85, 247, 0.8),
+      0 0 40px rgba(34, 211, 238, 0.4);
+  }
+
+  .particle-text[data-revealed="true"] .particle-text__char {
+    animation-play-state: running;
+  }
+
+  .particle-text:not([data-revealed="true"]) .particle-text__char {
+    animation-play-state: paused;
+  }
+
+  @keyframes particle-materialize {
+    0% {
+      opacity: 0;
+      transform:
+        translateX(calc((var(--char-index) % 3 - 1) * 40px))
+        translateY(calc(sin(var(--char-index) * 0.5) * 30px))
+        scale(0);
+      filter: blur(10px);
+    }
+    50% {
+      opacity: 0.5;
+      filter: blur(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  /* Continuous subtle glow pulse after materialization */
+  .particle-text__char {
+    animation: particle-materialize 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+               glow-pulse 3s ease-in-out infinite;
+    animation-delay: calc(var(--delay) + var(--char-delay)), calc(var(--delay) + var(--char-delay) + 0.8s);
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      text-shadow:
+        0 0 10px rgba(168, 85, 247, 0.5),
+        0 0 20px rgba(34, 211, 238, 0.2);
+    }
+    50% {
+      text-shadow:
+        0 0 20px rgba(168, 85, 247, 0.8),
+        0 0 40px rgba(34, 211, 238, 0.5);
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer to trigger animation when in view
+  const particleTexts = document.querySelectorAll('.particle-text');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).dataset.revealed = 'true';
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.3 }
+  );
+
+  particleTexts.forEach((text) => observer.observe(text));
+</script>

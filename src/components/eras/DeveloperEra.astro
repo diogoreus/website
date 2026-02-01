@@ -1,0 +1,895 @@
+---
+/**
+ * DeveloperEra (2012-2017) - Radical Redesign
+ *
+ * Design inspiration: VS Code, GitHub, Terminal, flat design era
+ * Layout: IDE frame with sidebar, editor, and terminal pane
+ * Elements: File explorer, tabs, code editor, terminal with typing
+ */
+
+import IDEFrame from '../developer/IDEFrame.astro';
+import FileExplorer from '../developer/FileExplorer.astro';
+import Terminal from '../developer/Terminal.astro';
+import CodeBlock from '../developer/CodeBlock.astro';
+import {
+  Atom, CircleDot, Leaf, Cloud, Wrench, Package,
+  Keyboard, Briefcase,
+  Building2, FlaskConical, Palette, ClipboardList, Users, FileCode, RefreshCcw, BarChart3
+} from '@lucide/astro';
+
+const fileTree = [
+  {
+    name: 'applique',
+    type: 'folder' as const,
+    open: true,
+    children: [
+      { name: 'package.json', type: 'file' as const, icon: 'package' },
+      { name: 'index.ts', type: 'file' as const, icon: 'typescript', active: true },
+      {
+        name: 'src',
+        type: 'folder' as const,
+        open: true,
+        children: [
+          { name: 'course-module.ts', type: 'file' as const, icon: 'typescript' },
+          { name: 'scorm-export.ts', type: 'file' as const, icon: 'typescript' },
+          { name: 'asset-library.ts', type: 'file' as const, icon: 'typescript' },
+        ]
+      },
+      {
+        name: 'config',
+        type: 'folder' as const,
+        open: false,
+        children: [
+          { name: 'aws.json', type: 'file' as const, icon: 'settings' },
+          { name: 'database.json', type: 'file' as const, icon: 'settings' },
+        ]
+      }
+    ]
+  },
+  {
+    name: 'roles',
+    type: 'folder' as const,
+    open: true,
+    children: [
+      { name: 'tech-lead.md', type: 'file' as const, icon: 'filetext' },
+      { name: 'head-of-product.md', type: 'file' as const, icon: 'filetext' },
+    ]
+  }
+];
+
+const tabs = [
+  { name: 'index.ts', icon: 'typescript', active: true },
+  { name: 'README.md', icon: 'bookopen' },
+  { name: 'package.json', icon: 'package' },
+];
+
+const terminalCommands = [
+  { prompt: 'applique', command: 'git log --oneline -5', output: `2f8a3b1 feat: add SCORM 1.2 export
+b4c7d2e refactor: migrate to Backbone.js
+9e1f5a8 chore: setup AWS S3 integration
+3a2b9c4 feat: implement drag-and-drop editor
+1d7e6f3 init: project setup with Node.js` },
+];
+
+const codeContent = `// Applique Core - Content Authoring Engine
+// Tech Lead: Diogo Reus | 2012-2017
+
+import { Model, Collection } from 'backbone';
+import * as AWS from 'aws-sdk';
+import { SCORMExporter } from './scorm-export';
+
+interface CourseData {
+  title: string;
+  scormVersion: '1.2' | '2004';
+  interactions: Interaction[];
+  assets: AssetReference[];
+}
+
+/**
+ * CourseModule - Core content unit for e-learning courses
+ * Features: Drag-and-drop, SCORM export, asset management
+ */
+export class CourseModule extends Model<CourseData> {
+  private s3: AWS.S3;
+  private exporter: SCORMExporter;
+
+  defaults(): CourseData {
+    return {
+      title: 'Untitled Course',
+      scormVersion: '1.2',
+      interactions: [],
+      assets: []
+    };
+  }
+
+  constructor(attrs?: Partial<CourseData>) {
+    super(attrs);
+    this.s3 = new AWS.S3({ region: 'sa-east-1' });
+    this.exporter = new SCORMExporter(this);
+  }
+
+  async exportToSCORM(): Promise<string> {
+    const manifest = this.exporter.generateManifest();
+    const packageUrl = await this.uploadPackage(manifest);
+
+    console.log(\`[Applique] SCORM package ready: \${packageUrl}\`);
+    return packageUrl;
+  }
+
+  private async uploadPackage(manifest: string): Promise<string> {
+    const key = \`courses/\${this.id}/imsmanifest.xml\`;
+
+    await this.s3.putObject({
+      Bucket: 'applique-exports',
+      Key: key,
+      Body: manifest,
+      ContentType: 'application/xml'
+    }).promise();
+
+    return \`https://cdn.applique.com.br/\${key}\`;
+  }
+}
+
+// Stats: 100+ clients | 50+ internal users | 1M+ assets`;
+
+const techStack = [
+  { name: 'Backbone.js', iconComponent: 'atom', color: '#0071B5' },
+  { name: 'Node.js', iconComponent: 'circledot', color: '#339933' },
+  { name: 'MongoDB', iconComponent: 'leaf', color: '#47A248' },
+  { name: 'AWS', iconComponent: 'cloud', color: '#FF9900' },
+  { name: 'Chef', iconComponent: 'wrench', color: '#F09820' },
+  { name: 'SCORM', iconComponent: 'package', color: '#58a6ff' },
+];
+
+const roles = [
+  {
+    title: 'Tech Lead',
+    iconComponent: 'keyboard',
+    duration: '1y 10mo',
+    period: 'Mar 2012 — Dec 2013',
+    highlights: [
+      'Led architecture decisions for Applique platform',
+      'Built frontend with Backbone.js, Sass, Gulp',
+      'Managed team of 4 developers',
+      'Set up AWS infrastructure with Chef'
+    ]
+  },
+  {
+    title: 'Head of Product',
+    iconComponent: 'briefcase',
+    duration: '3y 8mo',
+    period: 'Dec 2013 — Jul 2017',
+    highlights: [
+      'Secured 100+ contracting clients',
+      'Managed team of up to 10 professionals',
+      'Oversaw platform infrastructure on AWS',
+      'Established Applique as T&D market leader'
+    ]
+  }
+];
+
+const stats = [
+  { value: '100+', label: 'clients' },
+  { value: '50+', label: 'internal users' },
+  { value: '10', label: 'team members' },
+  { value: '1M+', label: 'assets in library' },
+];
+---
+
+<section id="era-developer" class="era-section developer-era" data-era="developer">
+  <!-- Background grid -->
+  <div class="grid-background"></div>
+
+  <div class="developer-content">
+    <!-- Era badge -->
+    <div class="era-badge animate-in">
+      <span class="badge-icon">&gt;_</span>
+      <div class="badge-text">
+        <span class="badge-year">2012 — 2017</span>
+        <span class="badge-title">// The Developer Era</span>
+      </div>
+    </div>
+
+    <!-- Main heading -->
+    <div class="heading-container animate-in">
+      <h2 class="developer-heading">
+        <span class="heading-line">Developer by</span>
+        <span class="heading-line heading-accent">Passion</span>
+      </h2>
+    </div>
+
+    <p class="developer-intro animate-in">
+      From Flash to full-stack. Built Brazil's leading e-learning authoring platform
+      from the ground up. Backbone.js, Node.js, MongoDB, AWS — the whole stack.
+    </p>
+
+    <!-- IDE Layout -->
+    <div class="ide-wrapper animate-in">
+      <IDEFrame title="applique — Visual Studio Code" tabs={tabs}>
+        <div class="ide-layout">
+          <!-- File Explorer Sidebar -->
+          <FileExplorer files={fileTree} />
+
+          <!-- Main Editor Area -->
+          <div class="editor-area">
+            <!-- Code Editor with line numbers -->
+            <div class="code-editor">
+              <div class="line-numbers">
+                {codeContent.split('\n').map((_, i) => (
+                  <span class="line-num">{i + 1}</span>
+                ))}
+              </div>
+              <div class="code-content">
+                <CodeBlock
+                  filename=""
+                  language="typescript"
+                  code={codeContent}
+                  showHeader={false}
+                />
+              </div>
+
+              <!-- Minimap preview -->
+              <div class="minimap">
+                <div class="minimap-content"></div>
+                <div class="minimap-slider"></div>
+              </div>
+            </div>
+
+            <!-- Terminal Panel -->
+            <div class="terminal-panel">
+              <div class="panel-tabs">
+                <button class="panel-tab active">TERMINAL</button>
+                <button class="panel-tab">PROBLEMS</button>
+                <button class="panel-tab">OUTPUT</button>
+                <div class="panel-spacer"></div>
+                <button class="panel-action">×</button>
+              </div>
+              <Terminal
+                title="bash"
+                commands={terminalCommands}
+              />
+            </div>
+          </div>
+        </div>
+      </IDEFrame>
+    </div>
+
+    <!-- Tech Stack Grid -->
+    <div class="tech-stack-section animate-in">
+      <h3 class="section-title">
+        <span class="comment">// </span>dependencies.json
+      </h3>
+      <div class="tech-grid">
+        {techStack.map((tech) => (
+          <div class="tech-item" style={`--tech-color: ${tech.color}`}>
+            <span class="tech-icon">
+              {tech.iconComponent === 'atom' && <Atom size={20} />}
+              {tech.iconComponent === 'circledot' && <CircleDot size={20} />}
+              {tech.iconComponent === 'leaf' && <Leaf size={20} />}
+              {tech.iconComponent === 'cloud' && <Cloud size={20} />}
+              {tech.iconComponent === 'wrench' && <Wrench size={20} />}
+              {tech.iconComponent === 'package' && <Package size={20} />}
+            </span>
+            <span class="tech-name">{tech.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Role Cards -->
+    <div class="roles-section">
+      <h3 class="section-title animate-in">
+        <span class="comment">// </span>career-progression
+      </h3>
+      <div class="roles-grid">
+        {roles.map((role) => (
+          <div class="role-card">
+            <div class="role-header">
+              <span class="role-icon">
+                {role.iconComponent === 'keyboard' && <Keyboard size={24} />}
+                {role.iconComponent === 'briefcase' && <Briefcase size={24} />}
+              </span>
+              <span class="role-duration">{role.duration}</span>
+            </div>
+            <h4 class="role-title">{role.title}</h4>
+            <p class="role-period">{role.period}</p>
+            <ul class="role-highlights">
+              {role.highlights.map((highlight) => (
+                <li>
+                  <span class="highlight-prefix">&gt;</span>
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Tech Lead Skills -->
+    <div class="skills-section animate-in">
+      <h3 class="section-title">
+        <span class="comment">// </span>tech-lead.skills
+      </h3>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <span class="skill-icon"><Building2 size={20} /></span>
+          <span class="skill-name">System Architecture</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><FlaskConical size={20} /></span>
+          <span class="skill-name">Testing Strategy</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><Palette size={20} /></span>
+          <span class="skill-name">Design Systems</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><ClipboardList size={20} /></span>
+          <span class="skill-name">Agile / Scrum</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><Users size={20} /></span>
+          <span class="skill-name">Team Management</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><FileCode size={20} /></span>
+          <span class="skill-name">Code Review</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><RefreshCcw size={20} /></span>
+          <span class="skill-name">CI/CD Pipelines</span>
+        </div>
+        <div class="skill-card">
+          <span class="skill-icon"><BarChart3 size={20} /></span>
+          <span class="skill-name">Technical Planning</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar animate-in">
+      <div class="stats-inner">
+        {stats.map((stat) => (
+          <div class="stat-item">
+            <span class="stat-value">{stat.value}</span>
+            <span class="stat-label">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .developer-era {
+    position: relative;
+    min-height: 100vh;
+    padding: 6rem 2rem 8rem;
+    background: #0d1117;
+    overflow: hidden;
+  }
+
+  .grid-background {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .developer-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Era badge */
+  .era-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    padding: 0.5rem 1rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+  }
+
+  .badge-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: #3fb950;
+    animation: cursor-blink 1s step-end infinite;
+  }
+
+  @keyframes cursor-blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .badge-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .badge-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #8b949e;
+    letter-spacing: 0.1em;
+  }
+
+  .badge-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #58a6ff;
+  }
+
+  /* Heading */
+  .heading-container {
+    margin-bottom: 2rem;
+  }
+
+  .developer-heading {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(3rem, 10vw, 6rem);
+    font-weight: 600;
+    line-height: 0.95;
+    margin: 0;
+  }
+
+  .heading-line {
+    display: block;
+    color: #c9d1d9;
+  }
+
+  .heading-accent {
+    color: #58a6ff;
+    text-shadow: 0 0 40px rgba(88, 166, 255, 0.4);
+  }
+
+  /* Intro */
+  .developer-intro {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #8b949e;
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+
+  /* IDE wrapper */
+  .ide-wrapper {
+    margin-bottom: 4rem;
+  }
+
+  .ide-layout {
+    display: flex;
+    height: 500px;
+  }
+
+  @media (max-width: 900px) {
+    .ide-layout {
+      flex-direction: column;
+      height: auto;
+    }
+  }
+
+  /* Editor area */
+  .editor-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .code-editor {
+    flex: 1;
+    display: flex;
+    background: #1e1e1e;
+    overflow: auto;
+    position: relative;
+  }
+
+  .line-numbers {
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    padding-left: 16px;
+    padding-right: 16px;
+    background: #1e1e1e;
+    border-right: 1px solid #252526;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #5a5a5a;
+    text-align: right;
+    user-select: none;
+    position: sticky;
+    left: 0;
+  }
+
+  .line-num {
+    line-height: 1.6;
+  }
+
+  .code-content {
+    flex: 1;
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  /* Override CodeBlock styles */
+  .code-content :global(.code-block) {
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .code-content :global(pre) {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Minimap */
+  .minimap {
+    width: 80px;
+    background: #1e1e1e;
+    border-left: 1px solid #252526;
+    position: relative;
+    display: none;
+  }
+
+  @media (min-width: 1200px) {
+    .minimap {
+      display: block;
+    }
+  }
+
+  .minimap-content {
+    position: absolute;
+    inset: 16px 8px;
+    background: linear-gradient(
+      180deg,
+      rgba(88, 166, 255, 0.1) 0%,
+      rgba(88, 166, 255, 0.05) 50%,
+      transparent 100%
+    );
+    opacity: 0.5;
+  }
+
+  .minimap-slider {
+    position: absolute;
+    top: 16px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(88, 166, 255, 0.2);
+    border: 1px solid rgba(88, 166, 255, 0.3);
+  }
+
+  /* Terminal panel */
+  .terminal-panel {
+    height: 150px;
+    border-top: 1px solid #252526;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-tabs {
+    display: flex;
+    align-items: center;
+    background: #252526;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 0 8px;
+  }
+
+  .panel-tab {
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: #8b8b8b;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-bottom: 2px solid transparent;
+  }
+
+  .panel-tab:hover {
+    color: #c5c5c5;
+  }
+
+  .panel-tab.active {
+    color: #ffffff;
+    border-bottom-color: #58a6ff;
+  }
+
+  .panel-spacer {
+    flex: 1;
+  }
+
+  .panel-action {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #8b8b8b;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 4px;
+  }
+
+  .panel-action:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .terminal-panel :global(.terminal) {
+    flex: 1;
+    border-radius: 0;
+  }
+
+  /* Tech stack section */
+  .tech-stack-section {
+    margin-bottom: 4rem;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: #c9d1d9;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .comment {
+    color: #8b949e;
+  }
+
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .tech-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .tech-item:hover {
+    border-color: var(--tech-color, #58a6ff);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .tech-icon {
+    display: flex;
+    align-items: center;
+    color: var(--tech-color, #58a6ff);
+  }
+
+  .tech-icon :global(svg) {
+    stroke-width: 1.5;
+  }
+
+  .tech-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #c9d1d9;
+  }
+
+  /* Roles section */
+  .roles-section {
+    margin-bottom: 4rem;
+  }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .role-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .role-card:hover {
+    border-color: #58a6ff;
+    box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
+  }
+
+  .role-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .role-icon {
+    display: flex;
+    align-items: center;
+    color: #58a6ff;
+  }
+
+  .role-icon :global(svg) {
+    stroke-width: 1.5;
+  }
+
+  .role-duration {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #3fb950;
+    background: rgba(63, 185, 80, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .role-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25rem;
+    color: #c9d1d9;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .role-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin: 0 0 1rem 0;
+  }
+
+  .role-highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .role-highlights li {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #8b949e;
+    padding: 0.25rem 0;
+  }
+
+  .highlight-prefix {
+    color: #58a6ff;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Stats bar */
+  .stats-bar {
+    margin-bottom: 4rem;
+    padding: 1.5rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+  }
+
+  .stats-inner {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #58a6ff;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #8b949e;
+    text-transform: lowercase;
+  }
+
+  /* Skills section */
+  .skills-section {
+    margin-bottom: 4rem;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .skill-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .skill-card:hover {
+    border-color: #58a6ff;
+    transform: translateY(-2px);
+  }
+
+  .skill-icon {
+    display: flex;
+    align-items: center;
+    color: #58a6ff;
+  }
+
+  .skill-icon :global(svg) {
+    stroke-width: 1.5;
+  }
+
+  .skill-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: #c9d1d9;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .developer-era {
+      padding: 4rem 1rem 6rem;
+    }
+
+    .ide-layout {
+      height: auto;
+    }
+
+    .ide-layout :global(.file-explorer) {
+      display: none;
+    }
+
+    .code-editor {
+      max-height: 300px;
+    }
+
+    .line-numbers {
+      display: none;
+    }
+
+    .stats-inner {
+      gap: 1.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+    }
+
+    .skills-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,846 @@
+---
+/**
+ * FlashEra (2010-2012) - Radical Redesign
+ *
+ * Design inspiration: 2Advanced Studios, Winamp skins, Frutiger Aero, DeviantArt
+ * Layout: Non-grid, diagonal/circular arrangement, perspective transforms
+ * Elements: Radial navigation, metallic cards, Winamp player, lens flares
+ */
+
+import MetallicCard from '../flash/MetallicCard.astro';
+import GradientOrb from '../flash/GradientOrb.astro';
+import WinampPlayer from '../flash/WinampPlayer.astro';
+import { Microscope, Gamepad2, Car, Building2 } from '@lucide/astro';
+
+const projects = [
+  {
+    title: 'LANTEC - UFSC',
+    subtitle: 'Flash AS3 Developer • 2010-2011',
+    description: 'My first professional gig at the university\'s multimedia lab. Researching technology in education — turns out, that would become my entire career.',
+    tech: ['Flash', 'AS3', 'EdTech'],
+    iconComponent: 'microscope'
+  },
+  {
+    title: 'VW SpaceCross Game',
+    subtitle: 'Interactive Mini-Game • Mobiliza',
+    description: 'A point-and-click challenge game for Volkswagen. Corporate training disguised as entertainment — my specialty.',
+    tech: ['ActionScript', 'Game Dev', 'VW'],
+    iconComponent: 'gamepad'
+  },
+  {
+    title: 'Garagem VW Training',
+    subtitle: 'E-Learning Course • Mobiliza',
+    description: 'Step-by-step vehicle presentation courses. Teaching salespeople how to show off cars, one Flash animation at a time.',
+    tech: ['SCORM', 'E-Learning', 'Flex'],
+    iconComponent: 'car'
+  },
+  {
+    title: 'BRF & Senior Projects',
+    subtitle: 'Corporate Training • Mobiliza',
+    description: 'Interactive courses and games for major Brazilian enterprises. Cross-functional collaboration before it was a buzzword.',
+    tech: ['Flash', 'Interactive', 'B2B'],
+    iconComponent: 'building'
+  }
+];
+
+const stats = [
+  { value: '1.5', label: 'Years at UFSC Lab' },
+  { value: '9', label: 'Months as Trainee' },
+  { value: '3+', label: 'Enterprise Clients' },
+];
+---
+
+<section id="era-flash" class="era-section flash-era" data-era="flash">
+  <!-- Animated background layer -->
+  <div class="flash-bg">
+    <!-- Gradient orbs -->
+    <div class="orb-layer">
+      <GradientOrb
+        position="top-left"
+        size="700px"
+        color1="#00ffff"
+        color2="#ff00ff"
+        blur="150px"
+        opacity={0.25}
+      />
+      <GradientOrb
+        position="bottom-right"
+        size="600px"
+        color1="#ff00ff"
+        color2="#0088ff"
+        blur="120px"
+        opacity={0.2}
+      />
+      <GradientOrb
+        position="center"
+        size="400px"
+        color1="#00ffff"
+        color2="#8800ff"
+        blur="100px"
+        opacity={0.15}
+      />
+    </div>
+
+    <!-- Lens flare effect -->
+    <div class="lens-flare">
+      <div class="flare flare-1"></div>
+      <div class="flare flare-2"></div>
+      <div class="flare flare-3"></div>
+    </div>
+
+    <!-- Diagonal grid pattern -->
+    <div class="diagonal-grid"></div>
+  </div>
+
+  <!-- Main content with perspective -->
+  <div class="flash-content">
+    <!-- Fake preloader text (nostalgic touch) -->
+    <div class="preloader-text animate-in">
+      <span class="loading-bar">
+        <span class="loading-fill"></span>
+      </span>
+      <span class="loading-label">LOADING MEMORIES...</span>
+    </div>
+
+    <!-- Era badge with glow -->
+    <div class="era-badge-container animate-in">
+      <div class="era-badge">
+        <span class="badge-icon">&#9670;</span>
+        <div class="badge-text">
+          <span class="badge-year">2010 — 2012</span>
+          <span class="badge-title">The Flash Era</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main heading with reflection -->
+    <div class="heading-container animate-in">
+      <h2 class="flash-heading">
+        <span class="heading-line">Designer by</span>
+        <span class="heading-line heading-accent">Education</span>
+      </h2>
+      <div class="heading-reflection" aria-hidden="true">
+        <span class="heading-line">Designer by</span>
+        <span class="heading-line">Education</span>
+      </div>
+    </div>
+
+    <p class="flash-intro animate-in">
+      Where it all began. University lab experiments, ActionScript 3, and the thrill of
+      making pixels dance. Building interactive games and courses before "UX" was a job title.
+    </p>
+
+    <!-- Two-column diagonal layout -->
+    <div class="flash-layout">
+      <!-- Left column: Metallic project cards in diagonal arrangement -->
+      <div class="projects-column">
+        <div class="diagonal-cards">
+          {projects.map((project, index) => (
+            <div class="card-wrapper" style={`--index: ${index}; --offset: ${index * 15}px`}>
+              <MetallicCard title={project.title} subtitle={project.subtitle}>
+                <p class="card-description">{project.description}</p>
+                <div class="card-tech">
+                  {project.tech.map((t) => (
+                    <span class="tech-tag">{t}</span>
+                  ))}
+                </div>
+              </MetallicCard>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Right column: Decorative elements -->
+      <div class="decorative-column">
+        <!-- Winamp player -->
+        <div class="winamp-container animate-in">
+          <WinampPlayer trackName="career_mixtape.mp3" artist="Diogo Reus" />
+        </div>
+
+        <!-- Floating stats orbs -->
+        <div class="stats-orbs animate-in">
+          {stats.map((stat, index) => (
+            <div class="stat-orb" style={`--delay: ${index * 0.15}s`}>
+              <div class="orb-inner">
+                <span class="orb-value">{stat.value}</span>
+                <span class="orb-label">{stat.label}</span>
+              </div>
+              <div class="orb-ring"></div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Circular tech showcase - Core Skills -->
+        <div class="tech-circle animate-in">
+          <div class="circle-inner">
+            <span class="circle-icon">&#10022;</span>
+          </div>
+          <div class="circle-items">
+            {['Flash', 'AS3', 'Flex', 'SCORM', 'Photoshop', 'After Effects'].map((tech, i) => (
+              <span class="circle-item" style={`--angle: ${i * 60}deg`}>{tech}</span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Skills expansion -->
+        <div class="skills-expansion animate-in">
+          <div class="skills-group">
+            <h4 class="skills-group-title">Design & Research</h4>
+            <div class="skills-tags">
+              <span class="skill-tag">Interaction Design</span>
+              <span class="skill-tag">Visual Design</span>
+              <span class="skill-tag">Prototyping</span>
+              <span class="skill-tag">User Testing</span>
+              <span class="skill-tag">User Research</span>
+              <span class="skill-tag">Focus Groups</span>
+              <span class="skill-tag">Wireframing</span>
+              <span class="skill-tag">Usability Analysis</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Cursor trail effect container -->
+  <div class="cursor-trail" id="cursor-trail-flash"></div>
+</section>
+
+<style>
+  .flash-era {
+    position: relative;
+    min-height: 100vh;
+    padding: 6rem 2rem 8rem;
+    background: linear-gradient(
+      180deg,
+      #1a0a2e 0%,
+      #0d0518 30%,
+      #150820 70%,
+      #1a0a2e 100%
+    );
+    overflow: hidden;
+    perspective: 1000px;
+  }
+
+  /* Background layers */
+  .flash-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .orb-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Lens flare effect */
+  .lens-flare {
+    position: absolute;
+    top: 10%;
+    right: 20%;
+    width: 300px;
+    height: 300px;
+  }
+
+  .flare {
+    position: absolute;
+    border-radius: 50%;
+    animation: flare-pulse 4s ease-in-out infinite;
+  }
+
+  .flare-1 {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.4) 0%, transparent 70%);
+    top: 0;
+    left: 0;
+  }
+
+  .flare-2 {
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+    top: 80px;
+    left: 120px;
+    animation-delay: 0.5s;
+  }
+
+  .flare-3 {
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, rgba(255, 0, 255, 0.5) 0%, transparent 70%);
+    top: 50px;
+    left: 180px;
+    animation-delay: 1s;
+  }
+
+  @keyframes flare-pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Diagonal grid pattern */
+  .diagonal-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(
+        45deg,
+        transparent 48%,
+        rgba(0, 255, 255, 0.03) 49%,
+        rgba(0, 255, 255, 0.03) 51%,
+        transparent 52%
+      ),
+      linear-gradient(
+        -45deg,
+        transparent 48%,
+        rgba(255, 0, 255, 0.03) 49%,
+        rgba(255, 0, 255, 0.03) 51%,
+        transparent 52%
+      );
+    background-size: 60px 60px;
+    opacity: 0.5;
+  }
+
+  /* Content container */
+  .flash-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Preloader text */
+  .preloader-text {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .loading-bar {
+    width: 100px;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .loading-fill {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #00ffff, #ff00ff);
+    animation: loading-complete 2s ease-out forwards;
+  }
+
+  @keyframes loading-complete {
+    0% { width: 0; }
+    100% { width: 100%; }
+  }
+
+  .loading-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(0, 255, 255, 0.7);
+    letter-spacing: 0.2em;
+    animation: label-blink 0.5s ease-in-out 3;
+  }
+
+  @keyframes label-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Era badge */
+  .era-badge-container {
+    margin-bottom: 2rem;
+  }
+
+  .era-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 30px;
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.2),
+      inset 0 0 20px rgba(0, 255, 255, 0.05);
+  }
+
+  .badge-icon {
+    font-size: 1.25rem;
+    color: #00ffff;
+    filter: drop-shadow(0 0 10px #00ffff);
+    animation: icon-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes icon-pulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(180deg); }
+  }
+
+  .badge-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .badge-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #ff00ff;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    letter-spacing: 0.1em;
+  }
+
+  .badge-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00ffff;
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+
+  /* Heading with reflection */
+  .heading-container {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+
+  .flash-heading {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    margin: 0;
+  }
+
+  .heading-line {
+    display: block;
+    color: #ffffff;
+    text-shadow:
+      0 0 40px rgba(255, 255, 255, 0.3),
+      0 0 80px rgba(0, 255, 255, 0.2);
+  }
+
+  .heading-accent {
+    background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #00ffff 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.5));
+    animation: gradient-shift 3s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .heading-reflection {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    color: transparent;
+    background: linear-gradient(180deg, rgba(0, 255, 255, 0.2) 0%, transparent 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    transform: scaleY(-1);
+    opacity: 0.3;
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .heading-reflection .heading-line {
+    color: transparent;
+    text-shadow: none;
+    -webkit-text-fill-color: unset;
+  }
+
+  /* Intro text */
+  .flash-intro {
+    font-family: Verdana, sans-serif;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #b8a8d4;
+    max-width: 600px;
+    margin-bottom: 4rem;
+  }
+
+  /* Two-column layout */
+  .flash-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .flash-layout {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
+  /* Diagonal cards arrangement */
+  .diagonal-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .card-wrapper {
+    transform: translateX(var(--offset)) rotate(calc(var(--index) * -0.5deg));
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .card-wrapper:hover {
+    transform: translateX(var(--offset)) rotate(0deg) scale(1.02);
+    z-index: 10;
+  }
+
+  .card-description {
+    margin: 0 0 1rem 0;
+  }
+
+  .card-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tech-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 20px;
+    color: #00ffff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+  }
+
+  /* Decorative column */
+  .decorative-column {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding-top: 2rem;
+  }
+
+  .winamp-container {
+    align-self: flex-end;
+  }
+
+  /* Stats orbs */
+  .stats-orbs {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .stat-orb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    animation: orb-float 4s ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes orb-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .orb-inner {
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #2d1b4e, #1a0a2e);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.2),
+      inset 0 0 20px rgba(0, 255, 255, 0.1);
+  }
+
+  .orb-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .orb-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    color: #b8a8d4;
+    text-align: center;
+    max-width: 60px;
+    line-height: 1.3;
+  }
+
+  .orb-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    animation: ring-spin 10s linear infinite;
+  }
+
+  .orb-ring::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    width: 6px;
+    height: 6px;
+    background: #00ffff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ffff;
+  }
+
+  @keyframes ring-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Circular tech showcase */
+  /* Skills expansion */
+  .skills-expansion {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.05), rgba(255, 0, 255, 0.05));
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 16px;
+  }
+
+  .skills-group-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #ff00ff;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 0.75rem 0;
+    text-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+  }
+
+  .skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.35rem 0.75rem;
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.25);
+    border-radius: 20px;
+    color: #00ffff;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .skill-tag:hover {
+    background: rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .tech-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+  }
+
+  .circle-inner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #00ffff, #0088aa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  }
+
+  .circle-icon {
+    font-size: 1.5rem;
+    color: #fff;
+    animation: icon-rotate 10s linear infinite;
+  }
+
+  @keyframes icon-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .circle-items {
+    position: absolute;
+    inset: 0;
+    animation: items-rotate 30s linear infinite;
+  }
+
+  @keyframes items-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+  }
+
+  .circle-item {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: rotate(var(--angle)) translateY(-85px) rotate(calc(-1 * var(--angle)));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #b8a8d4;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    animation: item-counter-rotate 30s linear infinite;
+  }
+
+  /* Cursor trail */
+  .cursor-trail {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .flash-era {
+      padding: 4rem 1rem 6rem;
+    }
+
+    .flash-layout {
+      gap: 2rem;
+    }
+
+    .decorative-column {
+      order: -1;
+    }
+
+    .winamp-container {
+      align-self: center;
+    }
+
+    .stats-orbs {
+      flex-wrap: wrap;
+    }
+
+    .stat-orb {
+      width: 80px;
+      height: 80px;
+    }
+
+    .orb-value {
+      font-size: 1.25rem;
+    }
+
+    .tech-circle {
+      display: none;
+    }
+
+    .card-wrapper {
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Cursor trail effect
+  const flashSection = document.getElementById('era-flash');
+  const trailContainer = document.getElementById('cursor-trail-flash');
+
+  if (trailContainer && flashSection) {
+    const trails: HTMLDivElement[] = [];
+    const trailCount = 12;
+
+    // Create trail particles
+    for (let i = 0; i < trailCount; i++) {
+      const trail = document.createElement('div');
+      trail.style.cssText = `
+        position: absolute;
+        width: ${14 - i}px;
+        height: ${14 - i}px;
+        border-radius: 50%;
+        background: ${i % 2 === 0 ? '#00ffff' : '#ff00ff'};
+        opacity: ${0.7 - i * 0.05};
+        pointer-events: none;
+        transition: transform 0.1s ease;
+        box-shadow: 0 0 ${12 - i}px ${i % 2 === 0 ? '#00ffff' : '#ff00ff'};
+        transform: translate(-50%, -50%);
+      `;
+      trailContainer.appendChild(trail);
+      trails.push(trail);
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+    const positions = trails.map(() => ({ x: 0, y: 0 }));
+    let isInSection = false;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isInSection = entries[0].isIntersecting;
+        trailContainer.style.opacity = isInSection ? '1' : '0';
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(flashSection);
+
+    document.addEventListener('mousemove', (e) => {
+      if (isInSection) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      }
+    });
+
+    function animateTrail() {
+      positions[0].x += (mouseX - positions[0].x) * 0.25;
+      positions[0].y += (mouseY - positions[0].y) * 0.25;
+
+      for (let i = 1; i < positions.length; i++) {
+        positions[i].x += (positions[i - 1].x - positions[i].x) * 0.25;
+        positions[i].y += (positions[i - 1].y - positions[i].y) * 0.25;
+      }
+
+      trails.forEach((trail, i) => {
+        trail.style.left = `${positions[i].x}px`;
+        trail.style.top = `${positions[i].y}px`;
+      });
+
+      requestAnimationFrame(animateTrail);
+    }
+
+    animateTrail();
+  }
+</script>

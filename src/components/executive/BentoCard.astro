@@ -1,0 +1,158 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  size?: 'small' | 'medium' | 'large' | 'wide' | 'tall';
+  variant?: 'default' | 'metric' | 'feature' | 'highlight';
+  class?: string;
+}
+
+const { title, subtitle, size = 'medium', variant = 'default', class: className = '' } = Astro.props;
+---
+
+<div class={`bento-card bento-card--${size} bento-card--${variant} ${className}`}>
+  <div class="card-glass"></div>
+  <div class="card-content">
+    {title && (
+      <div class="card-header">
+        <h3 class="card-title">{title}</h3>
+        {subtitle && <p class="card-subtitle">{subtitle}</p>}
+      </div>
+    )}
+    <div class="card-body">
+      <slot />
+    </div>
+  </div>
+  <div class="card-glow"></div>
+</div>
+
+<style>
+  .bento-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-glass {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 1;
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ededed;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .card-subtitle {
+    font-size: 0.8rem;
+    color: #888888;
+    margin: 0.25rem 0 0 0;
+  }
+
+  .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      rgba(0, 112, 243, 0.08),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .bento-card:hover .card-glass {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .bento-card:hover .card-glow {
+    opacity: 1;
+  }
+
+  /* Sizes */
+  .bento-card--small {
+    min-height: 150px;
+  }
+
+  .bento-card--medium {
+    min-height: 200px;
+  }
+
+  .bento-card--large {
+    min-height: 300px;
+    grid-row: span 2;
+  }
+
+  .bento-card--wide {
+    grid-column: span 2;
+  }
+
+  .bento-card--tall {
+    grid-row: span 2;
+  }
+
+  /* Variants */
+  .bento-card--metric .card-title {
+    font-size: 0.875rem;
+    color: #888888;
+    font-weight: 500;
+  }
+
+  .bento-card--highlight .card-glass {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 112, 243, 0.1),
+      rgba(121, 40, 202, 0.1)
+    );
+    border-color: rgba(0, 112, 243, 0.2);
+  }
+
+  .bento-card--highlight .card-glow {
+    opacity: 0.5;
+  }
+
+  .bento-card--feature .card-glass {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .bento-card--wide {
+      grid-column: span 1;
+    }
+  }
+</style>

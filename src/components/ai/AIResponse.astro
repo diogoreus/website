@@ -1,0 +1,332 @@
+---
+/**
+ * AIResponse - Typewriter effect simulating AI-generated output
+ * Shows content as if being generated in real-time
+ */
+
+interface Props {
+  lines: string[];
+  class?: string;
+  speed?: 'slow' | 'normal' | 'fast';
+}
+
+const { lines, class: className = '', speed = 'normal' } = Astro.props;
+
+const speedMap = {
+  slow: 50,
+  normal: 30,
+  fast: 15
+};
+---
+
+<div class={`ai-response ${className}`} data-speed={speedMap[speed]}>
+  <div class="ai-response__header">
+    <div class="ai-response__avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+    </div>
+    <div class="ai-response__meta">
+      <span class="ai-response__name">Neural Response</span>
+      <span class="ai-response__status">
+        <span class="status-dot"></span>
+        <span class="status-text">Generating...</span>
+      </span>
+    </div>
+    <div class="ai-response__thinking">
+      <span class="thinking-dot"></span>
+      <span class="thinking-dot"></span>
+      <span class="thinking-dot"></span>
+    </div>
+  </div>
+
+  <div class="ai-response__content">
+    {lines.map((line, index) => (
+      <p
+        class="ai-response__line"
+        data-line={index}
+        style={`--line-index: ${index}`}
+      >
+        <span class="line-text">{line}</span>
+        <span class="line-cursor">|</span>
+      </p>
+    ))}
+  </div>
+
+  <div class="ai-response__footer">
+    <span class="token-count">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+      </svg>
+      <span class="token-value">0</span> tokens
+    </span>
+    <span class="model-badge">GPT-5 Pipeline</span>
+  </div>
+</div>
+
+<style>
+  .ai-response {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+  }
+
+  .ai-response__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+    background: rgba(168, 85, 247, 0.05);
+  }
+
+  .ai-response__avatar {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #a855f7, #22d3ee);
+    border-radius: 8px;
+    color: #030303;
+  }
+
+  .ai-response__avatar svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-response__meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .ai-response__name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #f0f0f0;
+  }
+
+  .ai-response__status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #22d3ee;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22d3ee;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .ai-response__thinking {
+    display: flex;
+    gap: 4px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .ai-response[data-complete="true"] .ai-response__thinking {
+    opacity: 0;
+  }
+
+  .thinking-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a855f7;
+    animation: thinking 1.4s ease-in-out infinite;
+  }
+
+  .thinking-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .thinking-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes thinking {
+    0%, 60%, 100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    30% {
+      transform: translateY(-8px);
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .ai-response__content {
+    padding: 20px;
+    min-height: 120px;
+  }
+
+  .ai-response__line {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #e0e0e0;
+    margin: 0 0 1rem 0;
+    overflow: hidden;
+  }
+
+  .ai-response__line:last-child {
+    margin-bottom: 0;
+  }
+
+  .line-text {
+    display: inline;
+    overflow: hidden;
+    white-space: pre-wrap;
+  }
+
+  .line-cursor {
+    display: inline;
+    color: #a855f7;
+    animation: blink 0.7s step-end infinite;
+    opacity: 0;
+  }
+
+  .ai-response__line.typing .line-cursor {
+    opacity: 1;
+  }
+
+  .ai-response__line:not(.revealed) .line-text {
+    visibility: hidden;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .ai-response__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(168, 85, 247, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .token-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #707080;
+  }
+
+  .token-count svg {
+    stroke: #707080;
+  }
+
+  .token-value {
+    color: #a855f7;
+    min-width: 40px;
+  }
+
+  .model-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #22d3ee;
+    background: rgba(34, 211, 238, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 768px) {
+    .ai-response__header {
+      padding: 12px;
+    }
+
+    .ai-response__content {
+      padding: 16px;
+    }
+  }
+</style>
+
+<script>
+  const responses = document.querySelectorAll('.ai-response');
+
+  responses.forEach((response) => {
+    const lines = response.querySelectorAll('.ai-response__line');
+    const tokenValue = response.querySelector('.token-value');
+    const statusText = response.querySelector('.status-text');
+    const speed = parseInt(response.getAttribute('data-speed') || '30');
+    let totalTokens = 0;
+    let currentLine = 0;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            startTyping();
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    observer.observe(response);
+
+    function startTyping() {
+      if (currentLine < lines.length) {
+        typeLine(lines[currentLine] as HTMLElement);
+      }
+    }
+
+    function typeLine(line: HTMLElement) {
+      const textSpan = line.querySelector('.line-text') as HTMLElement;
+      const text = textSpan.textContent || '';
+      textSpan.textContent = '';
+      textSpan.style.visibility = 'visible';
+      line.classList.add('typing', 'revealed');
+
+      let charIndex = 0;
+
+      function typeChar() {
+        if (charIndex < text.length) {
+          textSpan.textContent += text[charIndex];
+          charIndex++;
+          totalTokens += Math.random() > 0.7 ? 1 : 0; // Simulate token counting
+          if (tokenValue) tokenValue.textContent = totalTokens.toString();
+          setTimeout(typeChar, speed + Math.random() * 20);
+        } else {
+          line.classList.remove('typing');
+          currentLine++;
+          if (currentLine < lines.length) {
+            setTimeout(() => typeLine(lines[currentLine] as HTMLElement), 200);
+          } else {
+            // Typing complete
+            response.setAttribute('data-complete', 'true');
+            if (statusText) statusText.textContent = 'Complete';
+          }
+        }
+      }
+
+      typeChar();
+    }
+  });
+</script>

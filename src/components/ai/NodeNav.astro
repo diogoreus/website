@@ -1,0 +1,353 @@
+---
+/**
+ * NodeNav - Clickable particle navigation nodes
+ * Glowing neural network nodes that act as navigation
+ */
+
+interface NavNode {
+  id: string;
+  label: string;
+  icon?: string;
+}
+
+interface Props {
+  nodes: NavNode[];
+  class?: string;
+}
+
+const { nodes, class: className = '' } = Astro.props;
+---
+
+<nav class={`node-nav ${className}`} aria-label="AI section navigation">
+  <svg class="node-nav__connections" aria-hidden="true">
+    <!-- Connection lines drawn by JS -->
+  </svg>
+
+  <div class="node-nav__nodes">
+    {nodes.map((node, index) => (
+      <button
+        class="node-nav__node"
+        data-node-id={node.id}
+        style={`--node-index: ${index}; --node-angle: ${(index / nodes.length) * 360}deg`}
+        aria-label={node.label}
+      >
+        <span class="node__core">
+          <span class="node__icon">{node.icon || '◈'}</span>
+        </span>
+        <span class="node__ring"></span>
+        <span class="node__pulse"></span>
+        <span class="node__label">{node.label}</span>
+      </button>
+    ))}
+  </div>
+
+  <div class="node-nav__center">
+    <span class="center__core"></span>
+    <span class="center__orbit"></span>
+  </div>
+</nav>
+
+<style>
+  .node-nav {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .node-nav__connections {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .node-nav__connections line {
+    stroke: url(#node-gradient);
+    stroke-width: 1;
+    opacity: 0.3;
+    animation: connection-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes connection-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+  }
+
+  .node-nav__nodes {
+    position: absolute;
+    inset: 0;
+  }
+
+  .node-nav__node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    margin: -30px;
+    transform:
+      rotate(var(--node-angle))
+      translateY(-120px)
+      rotate(calc(-1 * var(--node-angle)));
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    animation: node-appear 0.6s ease forwards;
+    animation-delay: calc(var(--node-index) * 0.1s);
+  }
+
+  @keyframes node-appear {
+    from {
+      opacity: 0;
+      transform:
+        rotate(var(--node-angle))
+        translateY(-80px)
+        rotate(calc(-1 * var(--node-angle)))
+        scale(0);
+    }
+    to {
+      opacity: 1;
+      transform:
+        rotate(var(--node-angle))
+        translateY(-120px)
+        rotate(calc(-1 * var(--node-angle)))
+        scale(1);
+    }
+  }
+
+  .node__core {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid rgba(168, 85, 247, 0.5);
+    border-radius: 50%;
+    z-index: 2;
+    transition: all 0.3s ease;
+  }
+
+  .node__icon {
+    font-size: 1.2rem;
+    color: #a855f7;
+    transition: all 0.3s ease;
+  }
+
+  .node__ring {
+    position: absolute;
+    inset: -4px;
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    border-radius: 50%;
+    animation: ring-rotate 10s linear infinite;
+  }
+
+  @keyframes ring-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .node__pulse {
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 50%;
+    animation: pulse-expand 2s ease-out infinite;
+  }
+
+  @keyframes pulse-expand {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.4);
+      opacity: 0;
+    }
+  }
+
+  .node__label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #707080;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .node-nav__node:hover .node__core {
+    background: rgba(168, 85, 247, 0.2);
+    border-color: #a855f7;
+    box-shadow:
+      0 0 20px rgba(168, 85, 247, 0.5),
+      0 0 40px rgba(34, 211, 238, 0.3);
+    transform: scale(1.1);
+  }
+
+  .node-nav__node:hover .node__icon {
+    color: #f0f0f0;
+    text-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+  }
+
+  .node-nav__node:hover .node__label {
+    opacity: 1;
+    color: #a855f7;
+  }
+
+  .node-nav__node:active .node__core {
+    transform: scale(0.95);
+  }
+
+  /* Center node */
+  .node-nav__center {
+    position: relative;
+    width: 24px;
+    height: 24px;
+  }
+
+  .center__core {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #a855f7, #22d3ee);
+    border-radius: 50%;
+    animation: center-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes center-pulse {
+    0%, 100% {
+      box-shadow:
+        0 0 10px rgba(168, 85, 247, 0.5),
+        0 0 20px rgba(34, 211, 238, 0.3);
+    }
+    50% {
+      box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.8),
+        0 0 40px rgba(34, 211, 238, 0.5),
+        0 0 60px rgba(168, 85, 247, 0.3);
+    }
+  }
+
+  .center__orbit {
+    position: absolute;
+    inset: -20px;
+    border: 1px dashed rgba(168, 85, 247, 0.3);
+    border-radius: 50%;
+    animation: orbit-spin 20s linear infinite;
+  }
+
+  @keyframes orbit-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 768px) {
+    .node-nav {
+      width: 240px;
+      height: 240px;
+    }
+
+    .node-nav__node {
+      transform:
+        rotate(var(--node-angle))
+        translateY(-90px)
+        rotate(calc(-1 * var(--node-angle)));
+    }
+
+    @keyframes node-appear {
+      from {
+        opacity: 0;
+        transform:
+          rotate(var(--node-angle))
+          translateY(-60px)
+          rotate(calc(-1 * var(--node-angle)))
+          scale(0);
+      }
+      to {
+        opacity: 1;
+        transform:
+          rotate(var(--node-angle))
+          translateY(-90px)
+          rotate(calc(-1 * var(--node-angle)))
+          scale(1);
+      }
+    }
+
+    .node__core {
+      width: 36px;
+      height: 36px;
+    }
+
+    .node__label {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Draw connections and handle clicks
+  const nodeNavs = document.querySelectorAll('.node-nav');
+
+  nodeNavs.forEach((nav) => {
+    const nodes = nav.querySelectorAll('.node-nav__node');
+    const svg = nav.querySelector('.node-nav__connections');
+
+    if (!svg) return;
+
+    // Add gradient definition
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    defs.innerHTML = `
+      <linearGradient id="node-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:1" />
+      </linearGradient>
+    `;
+    svg.appendChild(defs);
+
+    // Draw connections between adjacent nodes and to center
+    const centerX = 150;
+    const centerY = 150;
+
+    nodes.forEach((node, i) => {
+      const rect = (node as HTMLElement).getBoundingClientRect();
+      const navRect = (nav as HTMLElement).getBoundingClientRect();
+      const x = rect.left + rect.width / 2 - navRect.left;
+      const y = rect.top + rect.height / 2 - navRect.top;
+
+      // Line to center
+      const lineToCenter = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      lineToCenter.setAttribute('x1', centerX.toString());
+      lineToCenter.setAttribute('y1', centerY.toString());
+      lineToCenter.setAttribute('x2', x.toString());
+      lineToCenter.setAttribute('y2', y.toString());
+      lineToCenter.style.animationDelay = `${i * 0.5}s`;
+      svg.appendChild(lineToCenter);
+    });
+
+    // Handle node clicks
+    nodes.forEach((node) => {
+      node.addEventListener('click', () => {
+        const nodeId = (node as HTMLElement).dataset.nodeId;
+        const target = document.getElementById(nodeId || '');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  });
+</script>

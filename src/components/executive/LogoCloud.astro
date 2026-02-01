@@ -1,0 +1,88 @@
+---
+interface Props {
+  logos: Array<{ name: string; }>;
+  class?: string;
+}
+
+const { logos, class: className = '' } = Astro.props;
+---
+
+<div class={`logo-cloud ${className}`}>
+  <div class="logo-track">
+    {[...logos, ...logos].map((logo) => (
+      <div class="logo-item">
+        <span class="logo-text">{logo.name}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .logo-cloud {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+  }
+
+  .logo-track {
+    display: flex;
+    gap: 3rem;
+    animation: scroll 30s linear infinite;
+    width: fit-content;
+  }
+
+  .logo-item {
+    flex-shrink: 0;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .logo-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .logo-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #888888;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    transition: color 0.3s ease;
+  }
+
+  .logo-item:hover .logo-text {
+    color: #ededed;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Pause on hover */
+  .logo-cloud:hover .logo-track {
+    animation-play-state: paused;
+  }
+</style>

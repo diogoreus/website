@@ -1,0 +1,355 @@
+---
+/**
+ * RadialNav - Circular orbiting navigation in the style of 2Advanced Studios.
+ * Content items arranged in a circle, with rotation on hover/interaction.
+ */
+
+interface NavItem {
+  id: string;
+  label: string;
+  icon?: string;
+}
+
+interface Props {
+  items: NavItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+const itemCount = items.length;
+---
+
+<div class={`radial-nav ${className}`}>
+  <div class="radial-container">
+    <!-- Central orb -->
+    <div class="radial-center">
+      <div class="center-orb">
+        <span class="center-icon">&#9670;</span>
+      </div>
+      <div class="center-ring ring-1"></div>
+      <div class="center-ring ring-2"></div>
+      <div class="center-ring ring-3"></div>
+    </div>
+
+    <!-- Orbiting items -->
+    <div class="radial-orbit">
+      {items.map((item, index) => {
+        const angle = (index / itemCount) * 360;
+        return (
+          <button
+            class="orbit-item"
+            data-index={index}
+            style={`--angle: ${angle}deg; --delay: ${index * 0.1}s`}
+            aria-label={item.label}
+          >
+            <div class="orbit-dot">
+              <span class="orbit-icon">{item.icon || '◈'}</span>
+            </div>
+            <span class="orbit-label">{item.label}</span>
+            <div class="orbit-glow"></div>
+          </button>
+        );
+      })}
+    </div>
+
+    <!-- Connecting lines -->
+    <svg class="radial-connections" viewBox="0 0 300 300">
+      <defs>
+        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#00ffff" stop-opacity="0" />
+          <stop offset="50%" stop-color="#00ffff" stop-opacity="0.5" />
+          <stop offset="100%" stop-color="#ff00ff" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      {items.map((_, index) => {
+        const angle = (index / itemCount) * Math.PI * 2 - Math.PI / 2;
+        const x2 = 150 + Math.cos(angle) * 100;
+        const y2 = 150 + Math.sin(angle) * 100;
+        return (
+          <line
+            class="connection-line"
+            x1="150"
+            y1="150"
+            x2={x2}
+            y2={y2}
+            stroke="url(#lineGradient)"
+            stroke-width="1"
+            style={`animation-delay: ${index * 0.15}s`}
+          />
+        );
+      })}
+    </svg>
+  </div>
+</div>
+
+<style>
+  .radial-nav {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    perspective: 1000px;
+  }
+
+  .radial-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+
+  /* Central orb */
+  .radial-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+  .center-orb {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #00ffff, #0088aa);
+    box-shadow:
+      0 0 30px rgba(0, 255, 255, 0.5),
+      inset 0 0 20px rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-center 3s ease-in-out infinite;
+  }
+
+  .center-icon {
+    font-size: 1.5rem;
+    color: #ffffff;
+    filter: drop-shadow(0 0 10px #ffffff);
+    animation: rotate-slow 10s linear infinite;
+  }
+
+  @keyframes pulse-center {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Expanding rings */
+  .center-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    animation: ring-pulse 3s ease-out infinite;
+  }
+
+  .ring-1 {
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+  }
+
+  .ring-2 {
+    width: 100px;
+    height: 100px;
+    animation-delay: 1s;
+  }
+
+  .ring-3 {
+    width: 120px;
+    height: 120px;
+    animation-delay: 2s;
+  }
+
+  @keyframes ring-pulse {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  /* Orbit track */
+  .radial-orbit {
+    position: absolute;
+    inset: 0;
+    animation: orbit-rotate 60s linear infinite;
+  }
+
+  .radial-container:hover .radial-orbit {
+    animation-play-state: paused;
+  }
+
+  @keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Orbit items */
+  .orbit-item {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    transform: rotate(var(--angle)) translateY(-100px) rotate(calc(-1 * var(--angle)));
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: orbit-item-in 0.5s ease-out forwards;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+
+  @keyframes orbit-item-in {
+    from {
+      opacity: 0;
+      transform: rotate(var(--angle)) translateY(-60px) rotate(calc(-1 * var(--angle))) scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: rotate(var(--angle)) translateY(-100px) rotate(calc(-1 * var(--angle))) scale(1);
+    }
+  }
+
+  /* Counter-rotate to keep labels upright */
+  .radial-orbit .orbit-item {
+    animation: orbit-counter-rotate 60s linear infinite;
+    animation-delay: var(--delay);
+  }
+
+  .orbit-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2d1b4e 0%, #1a0a2e 100%);
+    border: 2px solid rgba(0, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow:
+      0 0 15px rgba(0, 255, 255, 0.3),
+      inset 0 0 10px rgba(0, 255, 255, 0.1);
+  }
+
+  .orbit-item:hover .orbit-dot {
+    transform: scale(1.2);
+    border-color: #00ffff;
+    box-shadow:
+      0 0 25px rgba(0, 255, 255, 0.6),
+      inset 0 0 15px rgba(0, 255, 255, 0.2);
+  }
+
+  .orbit-icon {
+    font-size: 1rem;
+    color: #00ffff;
+    filter: drop-shadow(0 0 5px #00ffff);
+  }
+
+  .orbit-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #b8a8d4;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  }
+
+  .orbit-item:hover .orbit-label {
+    opacity: 1;
+    color: #00ffff;
+  }
+
+  .orbit-glow {
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .orbit-item:hover .orbit-glow {
+    opacity: 1;
+    animation: glow-pulse 1s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.5; }
+  }
+
+  /* Connection lines */
+  .radial-connections {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .connection-line {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: line-draw 1s ease-out forwards;
+  }
+
+  @keyframes line-draw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .radial-nav {
+      width: 250px;
+      height: 250px;
+    }
+
+    .center-orb {
+      width: 50px;
+      height: 50px;
+    }
+
+    .orbit-item {
+      transform: rotate(var(--angle)) translateY(-80px) rotate(calc(-1 * var(--angle)));
+    }
+
+    .orbit-dot {
+      width: 35px;
+      height: 35px;
+    }
+  }
+</style>
+
+<script>
+  // Add click handlers for orbit items
+  const orbitItems = document.querySelectorAll('.orbit-item');
+
+  orbitItems.forEach((item) => {
+    item.addEventListener('click', () => {
+      const index = item.getAttribute('data-index');
+      // Emit custom event for parent to handle
+      item.dispatchEvent(new CustomEvent('orbit-select', {
+        bubbles: true,
+        detail: { index: parseInt(index || '0') }
+      }));
+    });
+  });
+</script>

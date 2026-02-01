@@ -1,0 +1,331 @@
+---
+interface Props {
+  from: 'flash' | 'developer' | 'executive';
+  to: 'developer' | 'executive' | 'ai';
+  class?: string;
+}
+
+const { from, to, class: className = '' } = Astro.props;
+const transitionId = `transition-${from}-${to}`;
+---
+
+<div id={transitionId} class={`transition-zone transition-${from}-${to} ${className}`}>
+  <!-- Glitch lines -->
+  <div class="glitch-lines">
+    {Array.from({ length: 20 }).map((_, i) => (
+      <div class="glitch-line" style={`--index: ${i}; --delay: ${Math.random() * 2}s`}></div>
+    ))}
+  </div>
+
+  <!-- Scanline overlay -->
+  <div class="scanline-overlay"></div>
+
+  <!-- Noise layer -->
+  <div class="noise-layer"></div>
+
+  <!-- Fragment particles -->
+  <div class="fragment-container">
+    {Array.from({ length: 30 }).map((_, i) => (
+      <div
+        class="fragment"
+        style={`
+          --x: ${Math.random() * 100}%;
+          --y: ${Math.random() * 100}%;
+          --size: ${Math.random() * 20 + 5}px;
+          --delay: ${Math.random() * 1.5}s;
+          --duration: ${Math.random() * 2 + 1}s;
+        `}
+      ></div>
+    ))}
+  </div>
+
+  <!-- Transition text -->
+  <div class="transition-text">
+    <span class="loading-text">
+      <span class="loading-bracket">[</span>
+      <span class="loading-content">MORPHING</span>
+      <span class="loading-bracket">]</span>
+    </span>
+  </div>
+
+  <!-- Chromatic aberration layers -->
+  <div class="chromatic-layer chromatic-r"></div>
+  <div class="chromatic-layer chromatic-g"></div>
+  <div class="chromatic-layer chromatic-b"></div>
+</div>
+
+<style>
+  .transition-zone {
+    position: relative;
+    height: 50vh;
+    min-height: 400px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, var(--from-bg), var(--to-bg));
+  }
+
+  /* From/To color variables */
+  .transition-flash-developer {
+    --from-bg: #1a0a2e;
+    --to-bg: #0d1117;
+    --accent-from: #00ffff;
+    --accent-to: #58a6ff;
+  }
+
+  .transition-developer-executive {
+    --from-bg: #0d1117;
+    --to-bg: #000000;
+    --accent-from: #58a6ff;
+    --accent-to: #0070f3;
+  }
+
+  .transition-executive-ai {
+    --from-bg: #000000;
+    --to-bg: #030303;
+    --accent-from: #0070f3;
+    --accent-to: #a855f7;
+  }
+
+  /* Glitch lines */
+  .glitch-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .glitch-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-from), var(--accent-to), transparent);
+    opacity: 0;
+    top: calc(var(--index) * 5%);
+    animation: glitch-line-anim 3s ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes glitch-line-anim {
+    0%, 100% {
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+    10%, 30% {
+      opacity: 0.8;
+      transform: translateX(0);
+    }
+    40% {
+      opacity: 0.3;
+      transform: translateX(100%);
+    }
+    41%, 99% {
+      opacity: 0;
+    }
+  }
+
+  /* Scanline overlay */
+  .scanline-overlay {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    animation: scanline-scroll 10s linear infinite;
+  }
+
+  @keyframes scanline-scroll {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100%; }
+  }
+
+  /* Noise layer */
+  .noise-layer {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.08;
+    pointer-events: none;
+    animation: noise-flicker 0.15s infinite;
+  }
+
+  @keyframes noise-flicker {
+    0%, 100% { opacity: 0.08; }
+    50% { opacity: 0.12; }
+  }
+
+  /* Fragment particles */
+  .fragment-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .fragment {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
+    height: var(--size);
+    background: linear-gradient(135deg, var(--accent-from), var(--accent-to));
+    opacity: 0;
+    animation: fragment-float var(--duration) ease-in-out infinite;
+    animation-delay: var(--delay);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  @keyframes fragment-float {
+    0%, 100% {
+      opacity: 0;
+      transform: translate(0, 0) rotate(0deg) scale(0);
+    }
+    20% {
+      opacity: 0.8;
+      transform: translate(-20px, -30px) rotate(90deg) scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translate(20px, -60px) rotate(180deg) scale(0.8);
+    }
+    80% {
+      opacity: 0.2;
+      transform: translate(-10px, -100px) rotate(270deg) scale(0.5);
+    }
+  }
+
+  /* Transition text */
+  .transition-text {
+    position: relative;
+    z-index: 10;
+  }
+
+  .loading-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .loading-bracket {
+    color: var(--accent-from);
+    animation: bracket-pulse 1s ease-in-out infinite alternate;
+  }
+
+  .loading-content {
+    color: rgba(255, 255, 255, 0.5);
+    animation: text-glitch 3s infinite;
+  }
+
+  @keyframes bracket-pulse {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes text-glitch {
+    0%, 90%, 100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    92% {
+      opacity: 0.8;
+      transform: translateX(-3px);
+    }
+    94% {
+      opacity: 0.6;
+      transform: translateX(3px);
+    }
+    96% {
+      opacity: 0.9;
+      transform: translateX(-1px);
+    }
+    98% {
+      opacity: 0.7;
+      transform: translateX(1px);
+    }
+  }
+
+  /* Chromatic aberration layers */
+  .chromatic-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0;
+    animation: chromatic-shift 4s ease-in-out infinite;
+  }
+
+  .chromatic-r {
+    background: linear-gradient(90deg, rgba(255, 0, 0, 0.1), transparent);
+    animation-delay: 0s;
+  }
+
+  .chromatic-g {
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+    animation-delay: 0.5s;
+  }
+
+  .chromatic-b {
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 255, 0.1));
+    animation-delay: 1s;
+  }
+
+  @keyframes chromatic-shift {
+    0%, 85%, 100% {
+      opacity: 0;
+      transform: translateX(0);
+    }
+    90% {
+      opacity: 0.5;
+      transform: translateX(-5px);
+    }
+    95% {
+      opacity: 0.3;
+      transform: translateX(5px);
+    }
+  }
+
+  /* Scroll-triggered intensity */
+  .transition-zone.active {
+    --intensity: 1;
+  }
+
+  .transition-zone.active .glitch-line {
+    animation-play-state: running;
+  }
+
+  .transition-zone:not(.active) .glitch-line {
+    animation-play-state: paused;
+  }
+</style>
+
+<script define:vars={{ transitionId }}>
+  // Add intersection observer to activate animations when in view
+  const zone = document.getElementById(transitionId);
+
+  if (zone) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            zone.classList.add('active');
+          } else {
+            zone.classList.remove('active');
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(zone);
+  }
+</script>

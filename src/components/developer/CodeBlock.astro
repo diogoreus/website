@@ -1,0 +1,163 @@
+---
+interface Props {
+  language?: string;
+  filename?: string;
+  code: string;
+  class?: string;
+}
+
+const { language = 'javascript', filename, code, class: className = '' } = Astro.props;
+
+// Simple syntax highlighting
+function highlightCode(code: string, lang: string): string {
+  const keywords = ['const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while', 'class', 'export', 'import', 'from', 'async', 'await', 'new', 'this', 'try', 'catch'];
+  const builtins = ['console', 'require', 'module', 'process', 'document', 'window'];
+
+  let highlighted = code
+    // Strings
+    .replace(/(["'`])(?:(?!\1)[^\\]|\\.)*?\1/g, '<span class="string">$&</span>')
+    // Comments
+    .replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>')
+    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="comment">$1</span>')
+    // Numbers
+    .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
+
+  // Keywords
+  keywords.forEach(kw => {
+    highlighted = highlighted.replace(new RegExp(`\\b(${kw})\\b`, 'g'), '<span class="keyword">$1</span>');
+  });
+
+  // Builtins
+  builtins.forEach(bi => {
+    highlighted = highlighted.replace(new RegExp(`\\b(${bi})\\b`, 'g'), '<span class="builtin">$1</span>');
+  });
+
+  // Functions
+  highlighted = highlighted.replace(/\b([a-zA-Z_]\w*)\s*\(/g, '<span class="function">$1</span>(');
+
+  return highlighted;
+}
+---
+
+<div class={`code-block ${className}`}>
+  {filename && (
+    <div class="code-header">
+      <span class="code-filename">
+        <svg class="file-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M3.75 1.5a.25.25 0 0 0-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25V6H9.75A1.75 1.75 0 0 1 8 4.25V1.5H3.75zm5.75.56v2.19c0 .138.112.25.25.25h2.19L9.5 2.06zM2 1.75C2 .784 2.784 0 3.75 0h5.086c.464 0 .909.184 1.237.513l3.414 3.414c.329.328.513.773.513 1.237v8.086A1.75 1.75 0 0 1 12.25 15h-8.5A1.75 1.75 0 0 1 2 13.25V1.75z"/>
+        </svg>
+        {filename}
+      </span>
+      <span class="code-language">{language}</span>
+    </div>
+  )}
+  <pre class="code-content"><code class={`language-${language}`} set:html={highlightCode(code, language)} /></pre>
+  <div class="code-line-numbers">
+    {code.split('\n').map((_, i) => (
+      <span class="line-number">{i + 1}</span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .code-block {
+    position: relative;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .code-filename {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #c9d1d9;
+    font-size: 0.8rem;
+  }
+
+  .file-icon {
+    width: 16px;
+    height: 16px;
+    color: #8b949e;
+  }
+
+  .code-language {
+    font-size: 0.7rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .code-content {
+    margin: 0;
+    padding: 1rem 1rem 1rem 3.5rem;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+
+  .code-content code {
+    color: #c9d1d9;
+  }
+
+  .code-line-numbers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #30363d;
+    background: #0d1117;
+    user-select: none;
+  }
+
+  .code-header + .code-content + .code-line-numbers {
+    top: 45px;
+  }
+
+  .line-number {
+    color: #484f58;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    text-align: right;
+    min-width: 1.5rem;
+  }
+
+  /* Syntax highlighting */
+  :global(.keyword) {
+    color: #ff7b72;
+  }
+
+  :global(.string) {
+    color: #a5d6ff;
+  }
+
+  :global(.comment) {
+    color: #8b949e;
+    font-style: italic;
+  }
+
+  :global(.number) {
+    color: #79c0ff;
+  }
+
+  :global(.function) {
+    color: #d2a8ff;
+  }
+
+  :global(.builtin) {
+    color: #ffa657;
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+interface Props {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  decimals?: number;
+  duration?: number;
+  class?: string;
+}
+
+const { value, prefix = '', suffix = '', decimals = 0, duration = 2000, class: className = '' } = Astro.props;
+---
+
+<span
+  class={`animated-counter ${className}`}
+  data-target={value}
+  data-prefix={prefix}
+  data-suffix={suffix}
+  data-decimals={decimals}
+  data-duration={duration}
+>
+  {prefix}0{suffix}
+</span>
+
+<style>
+  .animated-counter {
+    font-family: 'Inter', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #ededed;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    display: block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 768px) {
+    .animated-counter {
+      font-size: 2.5rem;
+    }
+  }
+</style>
+
+<script>
+  // Counter animation on scroll into view
+  const counters = document.querySelectorAll('.animated-counter');
+
+  const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const counter = entry.target as HTMLElement;
+        animateCounter(counter);
+        observer.unobserve(counter);
+      }
+    });
+  }, observerOptions);
+
+  counters.forEach(counter => observer.observe(counter));
+
+  function animateCounter(element: HTMLElement) {
+    const target = parseFloat(element.dataset.target || '0');
+    const prefix = element.dataset.prefix || '';
+    const suffix = element.dataset.suffix || '';
+    const decimals = parseInt(element.dataset.decimals || '0');
+    const duration = parseInt(element.dataset.duration || '2000');
+
+    let startTime: number | null = null;
+    const startValue = 0;
+
+    function easeOutExpo(t: number): number {
+      return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+    }
+
+    function update(currentTime: number) {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutExpo(progress);
+      const currentValue = startValue + (target - startValue) * easedProgress;
+
+      element.textContent = `${prefix}${currentValue.toFixed(decimals)}${suffix}`;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+</script>

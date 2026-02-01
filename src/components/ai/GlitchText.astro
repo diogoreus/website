@@ -1,0 +1,121 @@
+---
+interface Props {
+  text: string;
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'span' | 'p';
+  class?: string;
+}
+
+const { text, tag: Tag = 'h2', class: className = '' } = Astro.props;
+---
+
+<Tag class={`glitch-text ${className}`} data-text={text}>
+  {text}
+</Tag>
+
+<style>
+  .glitch-text {
+    position: relative;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    color: #f0f0f0;
+    animation: glitch-shift 5s infinite;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+
+  .glitch-text::before {
+    color: #a855f7;
+    animation: glitch-anim-1 3s infinite linear alternate-reverse;
+    clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  }
+
+  .glitch-text::after {
+    color: #22d3ee;
+    animation: glitch-anim-2 2s infinite linear alternate-reverse;
+    clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  }
+
+  @keyframes glitch-anim-1 {
+    0%, 100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  @keyframes glitch-anim-2 {
+    0%, 100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(2px, -2px);
+    }
+    40% {
+      transform: translate(2px, 2px);
+    }
+    60% {
+      transform: translate(-2px, -2px);
+    }
+    80% {
+      transform: translate(-2px, 2px);
+    }
+  }
+
+  @keyframes glitch-shift {
+    0%, 90%, 100% {
+      transform: translate(0);
+      filter: none;
+    }
+    92% {
+      transform: translate(-3px, 0);
+      filter: hue-rotate(90deg);
+    }
+    94% {
+      transform: translate(3px, 0);
+      filter: hue-rotate(-90deg);
+    }
+    96% {
+      transform: translate(-1px, 2px);
+      filter: blur(1px);
+    }
+    98% {
+      transform: translate(1px, -2px);
+      filter: blur(0);
+    }
+  }
+
+  /* Intensity variants */
+  .glitch-text--subtle::before,
+  .glitch-text--subtle::after {
+    animation-duration: 6s;
+    opacity: 0.5;
+  }
+
+  .glitch-text--intense {
+    animation: glitch-shift 2s infinite;
+  }
+
+  .glitch-text--intense::before,
+  .glitch-text--intense::after {
+    animation-duration: 1s;
+  }
+</style>

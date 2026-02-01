@@ -1,0 +1,115 @@
+---
+interface Props {
+  size?: string;
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+  color1?: string;
+  color2?: string;
+  blur?: string;
+  opacity?: number;
+}
+
+const {
+  size = '400px',
+  position = 'center',
+  color1 = '#00ffff',
+  color2 = '#ff00ff',
+  blur = '100px',
+  opacity = 0.4
+} = Astro.props;
+
+const positionStyles: Record<string, string> = {
+  'top-left': 'top: -20%; left: -20%;',
+  'top-right': 'top: -20%; right: -20%;',
+  'bottom-left': 'bottom: -20%; left: -20%;',
+  'bottom-right': 'bottom: -20%; right: -20%;',
+  'center': 'top: 50%; left: 50%; transform: translate(-50%, -50%);',
+};
+---
+
+<div
+  class="gradient-orb"
+  style={`
+    width: ${size};
+    height: ${size};
+    ${positionStyles[position]}
+    --orb-color1: ${color1};
+    --orb-color2: ${color2};
+    --orb-blur: ${blur};
+    --orb-opacity: ${opacity};
+  `}
+>
+  <div class="orb-inner"></div>
+  <div class="orb-glow"></div>
+</div>
+
+<style>
+  .gradient-orb {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    animation: orb-float 20s ease-in-out infinite;
+  }
+
+  .orb-inner {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 30% 30%,
+      var(--orb-color1),
+      var(--orb-color2)
+    );
+    filter: blur(var(--orb-blur));
+    opacity: var(--orb-opacity);
+    animation: orb-pulse 8s ease-in-out infinite;
+  }
+
+  .orb-glow {
+    position: absolute;
+    inset: -20%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      var(--orb-color1) 0%,
+      transparent 70%
+    );
+    filter: blur(calc(var(--orb-blur) * 1.5));
+    opacity: calc(var(--orb-opacity) * 0.3);
+    animation: orb-glow-pulse 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes orb-float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(5%, 10%) scale(1.05);
+    }
+    50% {
+      transform: translate(-5%, 5%) scale(0.95);
+    }
+    75% {
+      transform: translate(8%, -5%) scale(1.02);
+    }
+  }
+
+  @keyframes orb-pulse {
+    0%, 100% {
+      opacity: var(--orb-opacity);
+    }
+    50% {
+      opacity: calc(var(--orb-opacity) * 1.3);
+    }
+  }
+
+  @keyframes orb-glow-pulse {
+    0% {
+      transform: scale(0.9);
+      opacity: calc(var(--orb-opacity) * 0.2);
+    }
+    100% {
+      transform: scale(1.1);
+      opacity: calc(var(--orb-opacity) * 0.4);
+    }
+  }
+</style>

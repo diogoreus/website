@@ -1,0 +1,158 @@
+---
+interface Props {
+  title?: string;
+  commands: Array<{
+    prompt?: string;
+    command: string;
+    output?: string;
+  }>;
+  class?: string;
+}
+
+const { title = 'diogo@mobiliza', commands, class: className = '' } = Astro.props;
+---
+
+<div class={`terminal ${className}`}>
+  <div class="terminal-header">
+    <div class="terminal-buttons">
+      <span class="terminal-btn terminal-btn--close"></span>
+      <span class="terminal-btn terminal-btn--minimize"></span>
+      <span class="terminal-btn terminal-btn--maximize"></span>
+    </div>
+    <span class="terminal-title">{title}</span>
+  </div>
+  <div class="terminal-body">
+    {commands.map((cmd, index) => (
+      <div class="terminal-line" style={`--delay: ${index * 0.5}s`}>
+        <span class="terminal-prompt">{cmd.prompt || '$'}</span>
+        <span class="terminal-command" data-typing>{cmd.command}</span>
+        {cmd.output && (
+          <pre class="terminal-output">{cmd.output}</pre>
+        )}
+      </div>
+    ))}
+    <div class="terminal-cursor"></div>
+  </div>
+</div>
+
+<style>
+  .terminal {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .terminal-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal-btn--close {
+    background: #ff5f56;
+  }
+
+  .terminal-btn--minimize {
+    background: #ffbd2e;
+  }
+
+  .terminal-btn--maximize {
+    background: #27c93f;
+  }
+
+  .terminal-title {
+    font-size: 0.75rem;
+    color: #8b949e;
+    flex: 1;
+    text-align: center;
+  }
+
+  .terminal-body {
+    padding: 1rem;
+    min-height: 200px;
+  }
+
+  .terminal-line {
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: line-appear 0.3s ease forwards;
+    animation-delay: var(--delay);
+  }
+
+  .terminal-prompt {
+    color: #3fb950;
+    margin-right: 0.5rem;
+  }
+
+  .terminal-command {
+    color: #c9d1d9;
+  }
+
+  .terminal-output {
+    color: #8b949e;
+    margin: 0.5rem 0 0 0;
+    padding-left: 1rem;
+    border-left: 2px solid #30363d;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background: #58a6ff;
+    animation: blink 1s step-end infinite;
+    margin-top: 0.5rem;
+  }
+
+  @keyframes line-appear {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Typing animation for commands */
+  [data-typing] {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid transparent;
+    animation: typing 1s steps(40, end) forwards;
+    animation-delay: calc(var(--delay, 0s) + 0.2s);
+    width: 0;
+    display: inline-block;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+</style>

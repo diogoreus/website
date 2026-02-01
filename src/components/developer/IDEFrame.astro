@@ -1,0 +1,366 @@
+---
+/**
+ * IDEFrame - VS Code-style window frame with traffic lights and tabs.
+ * Wraps content in an IDE-like container.
+ */
+
+interface Tab {
+  name: string;
+  icon?: string;
+  active?: boolean;
+}
+
+interface Props {
+  title?: string;
+  tabs?: Tab[];
+  class?: string;
+}
+
+const { title = 'Career — Visual Studio Code', tabs = [], class: className = '' } = Astro.props;
+---
+
+<div class={`ide-frame ${className}`}>
+  <!-- Title bar -->
+  <div class="ide-titlebar">
+    <div class="traffic-lights">
+      <span class="light light-close"></span>
+      <span class="light light-minimize"></span>
+      <span class="light light-maximize"></span>
+    </div>
+    <div class="titlebar-center">
+      <span class="title-text">{title}</span>
+    </div>
+    <div class="titlebar-actions">
+      <button class="action-btn" aria-label="Toggle sidebar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <rect x="0" y="0" width="4" height="14" opacity="0.5"/>
+          <rect x="5" y="0" width="9" height="14"/>
+        </svg>
+      </button>
+      <button class="action-btn" aria-label="Toggle panel">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <rect x="0" y="0" width="14" height="8"/>
+          <rect x="0" y="9" width="14" height="5" opacity="0.5"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  {tabs.length > 0 && (
+    <div class="ide-tabs">
+      {tabs.map((tab) => (
+        <button class={`tab ${tab.active ? 'active' : ''}`} data-tab={tab.name}>
+          <span class="tab-icon">{tab.icon || '📄'}</span>
+          <span class="tab-name">{tab.name}</span>
+          <span class="tab-close">×</span>
+        </button>
+      ))}
+      <div class="tabs-spacer"></div>
+    </div>
+  )}
+
+  <!-- Breadcrumb bar -->
+  <div class="ide-breadcrumb">
+    <span class="breadcrumb-item">career</span>
+    <span class="breadcrumb-sep">&gt;</span>
+    <span class="breadcrumb-item">developer-era</span>
+    <span class="breadcrumb-sep">&gt;</span>
+    <span class="breadcrumb-item active">index.ts</span>
+  </div>
+
+  <!-- Main content area -->
+  <div class="ide-content">
+    <slot />
+  </div>
+
+  <!-- Status bar -->
+  <div class="ide-statusbar">
+    <div class="status-left">
+      <span class="status-item status-branch">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <circle cx="3" cy="3" r="2"/>
+          <circle cx="9" cy="9" r="2"/>
+          <line x1="3" y1="5" x2="3" y2="7" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="3" y1="7" x2="9" y2="7" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        main
+      </span>
+      <span class="status-item status-sync">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <path d="M6 1v4l3-2-3-2z"/>
+          <path d="M6 11v-4l-3 2 3 2z"/>
+        </svg>
+      </span>
+      <span class="status-item status-errors">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <circle cx="6" cy="6" r="5" fill="none" stroke="currentColor"/>
+          <path d="M6 3v4"/>
+          <circle cx="6" cy="9" r="1"/>
+        </svg>
+        0
+      </span>
+      <span class="status-item status-warnings">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+          <path d="M6 1L1 11h10L6 1z" fill="none" stroke="currentColor"/>
+          <path d="M6 4v3"/>
+          <circle cx="6" cy="9" r="1"/>
+        </svg>
+        0
+      </span>
+    </div>
+    <div class="status-right">
+      <span class="status-item">TypeScript</span>
+      <span class="status-item">UTF-8</span>
+      <span class="status-item">LF</span>
+      <span class="status-item">Ln 42, Col 16</span>
+      <span class="status-item status-prettier">Prettier</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ide-frame {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Title bar */
+  .ide-titlebar {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 12px;
+    background: #323233;
+    border-bottom: 1px solid #252526;
+    user-select: none;
+    -webkit-app-region: drag;
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+  }
+
+  .light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+
+  .light-close { background: #ff5f57; }
+  .light-minimize { background: #febc2e; }
+  .light-maximize { background: #28c840; }
+
+  .light:hover {
+    filter: brightness(1.1);
+  }
+
+  .titlebar-center {
+    flex: 1;
+    text-align: center;
+  }
+
+  .title-text {
+    font-size: 0.75rem;
+    color: #8b8b8b;
+  }
+
+  .titlebar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-btn {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #8b8b8b;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #c5c5c5;
+  }
+
+  /* Tab bar */
+  .ide-tabs {
+    display: flex;
+    background: #252526;
+    border-bottom: 1px solid #1e1e1e;
+    overflow-x: auto;
+  }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #2d2d2d;
+    border: none;
+    border-right: 1px solid #252526;
+    color: #8b8b8b;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .tab:hover {
+    background: #323233;
+  }
+
+  .tab.active {
+    background: #1e1e1e;
+    color: #ffffff;
+    border-bottom: 1px solid #1e1e1e;
+    margin-bottom: -1px;
+  }
+
+  .tab-icon {
+    font-size: 0.9rem;
+  }
+
+  .tab-close {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  .tab:hover .tab-close {
+    opacity: 1;
+  }
+
+  .tab-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .tabs-spacer {
+    flex: 1;
+    background: #252526;
+  }
+
+  /* Breadcrumb */
+  .ide-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 16px;
+    background: #1e1e1e;
+    border-bottom: 1px solid #252526;
+    font-size: 0.75rem;
+  }
+
+  .breadcrumb-item {
+    color: #8b8b8b;
+  }
+
+  .breadcrumb-item.active {
+    color: #c5c5c5;
+  }
+
+  .breadcrumb-sep {
+    color: #5a5a5a;
+  }
+
+  /* Content area */
+  .ide-content {
+    flex: 1;
+    overflow: auto;
+    background: #1e1e1e;
+  }
+
+  /* Status bar */
+  .ide-statusbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 22px;
+    padding: 0 8px;
+    background: #007acc;
+    font-size: 0.7rem;
+    color: #ffffff;
+  }
+
+  .status-left,
+  .status-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border-radius: 2px;
+  }
+
+  .status-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .status-item svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .ide-titlebar {
+      height: 32px;
+      padding: 0 8px;
+    }
+
+    .traffic-lights {
+      gap: 6px;
+    }
+
+    .light {
+      width: 10px;
+      height: 10px;
+    }
+
+    .title-text {
+      display: none;
+    }
+
+    .ide-tabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab {
+      padding: 6px 10px;
+      font-size: 0.75rem;
+    }
+
+    .status-right {
+      display: none;
+    }
+  }
+</style>

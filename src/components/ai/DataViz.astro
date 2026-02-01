@@ -1,0 +1,149 @@
+---
+interface Props {
+  items: Array<{
+    label: string;
+    value: string | number;
+    subtext?: string;
+  }>;
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<div class={`data-viz ${className}`}>
+  {items.map((item, index) => (
+    <div class="data-item" style={`--index: ${index}`}>
+      <div class="data-bar">
+        <div class="data-fill" style={`--width: ${(index + 1) / items.length * 100}%`}></div>
+        <div class="data-pulse"></div>
+      </div>
+      <div class="data-content">
+        <span class="data-value">{item.value}</span>
+        <span class="data-label">{item.label}</span>
+        {item.subtext && <span class="data-subtext">{item.subtext}</span>}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .data-viz {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .data-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    opacity: 0;
+    animation: data-appear 0.5s ease forwards;
+    animation-delay: calc(var(--index) * 0.15s);
+  }
+
+  .data-bar {
+    position: relative;
+    width: 100px;
+    height: 4px;
+    background: rgba(168, 85, 247, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .data-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--width);
+    background: linear-gradient(90deg, #a855f7, #22d3ee);
+    border-radius: 2px;
+    animation: fill-grow 1s ease forwards;
+    animation-delay: calc(var(--index) * 0.15s + 0.3s);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+
+  .data-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: pulse-move 2s ease-in-out infinite;
+    animation-delay: calc(var(--index) * 0.2s);
+  }
+
+  .data-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .data-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f0f0f0;
+    letter-spacing: -0.02em;
+  }
+
+  .data-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #a855f7;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .data-subtext {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    color: #707080;
+  }
+
+  @keyframes data-appear {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fill-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes pulse-move {
+    0%, 100% {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(100px);
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .data-bar {
+      width: 60px;
+    }
+
+    .data-value {
+      font-size: 1.25rem;
+    }
+  }
+</style>

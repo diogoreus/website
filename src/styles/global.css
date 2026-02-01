@@ -1,0 +1,270 @@
+/* Google Fonts - must come before tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* ============================================
+   ERA CSS CUSTOM PROPERTIES
+   ============================================ */
+
+:root {
+  /* Base/Neutral (Hero state) */
+  --era-bg: #0a0a0a;
+  --era-bg-secondary: #141414;
+  --era-text: #ffffff;
+  --era-text-secondary: #a0a0a0;
+  --era-accent: #ffffff;
+  --era-accent-secondary: #888888;
+  --era-border: #333333;
+  --era-border-radius: 12px;
+  --era-glow-intensity: 0;
+  --era-glow-color: rgba(255, 255, 255, 0.2);
+  --era-font-heading: 'Inter', sans-serif;
+  --era-font-body: 'Inter', sans-serif;
+  --era-font-mono: 'JetBrains Mono', monospace;
+  --era-heading-weight: 700;
+  --era-letter-spacing: -0.02em;
+  --era-transition-speed: 0.3s;
+
+  /* Transition zone intensity (0-1) */
+  --transition-glitch: 0;
+  --transition-shake: 0;
+  --transition-dissolve: 0;
+}
+
+/* ============================================
+   ERA 1: FLASH/DESIGNER (2010-2012)
+   Frutiger Aero, glossy, neon, playful
+   ============================================ */
+
+[data-era="flash"] {
+  --era-bg: #1a0a2e;
+  --era-bg-secondary: #2d1b4e;
+  --era-text: #ffffff;
+  --era-text-secondary: #b8a8d4;
+  --era-accent: #00ffff;
+  --era-accent-secondary: #ff00ff;
+  --era-border: rgba(0, 255, 255, 0.3);
+  --era-border-radius: 20px;
+  --era-glow-intensity: 1;
+  --era-glow-color: rgba(0, 255, 255, 0.4);
+  --era-font-heading: 'Inter', Arial, sans-serif;
+  --era-font-body: Verdana, sans-serif;
+  --era-heading-weight: 800;
+  --era-letter-spacing: 0.02em;
+}
+
+/* ============================================
+   ERA 2: DEVELOPER/TECH LEAD (2012-2017)
+   GitHub Dark, terminal, flat design
+   ============================================ */
+
+[data-era="developer"] {
+  --era-bg: #0d1117;
+  --era-bg-secondary: #161b22;
+  --era-text: #c9d1d9;
+  --era-text-secondary: #8b949e;
+  --era-accent: #58a6ff;
+  --era-accent-secondary: #3fb950;
+  --era-border: #30363d;
+  --era-border-radius: 6px;
+  --era-glow-intensity: 0.3;
+  --era-glow-color: rgba(88, 166, 255, 0.2);
+  --era-font-heading: 'JetBrains Mono', monospace;
+  --era-font-body: 'Inter', sans-serif;
+  --era-heading-weight: 600;
+  --era-letter-spacing: 0;
+}
+
+/* ============================================
+   ERA 3: EXECUTIVE/PRODUCT (2017-2024)
+   Modern SaaS, Vercel/Linear style, minimal
+   ============================================ */
+
+[data-era="executive"] {
+  --era-bg: #000000;
+  --era-bg-secondary: #0a0a0a;
+  --era-text: #ededed;
+  --era-text-secondary: #888888;
+  --era-accent: #0070f3;
+  --era-accent-secondary: #7928ca;
+  --era-border: rgba(255, 255, 255, 0.1);
+  --era-border-radius: 12px;
+  --era-glow-intensity: 0.5;
+  --era-glow-color: rgba(0, 112, 243, 0.15);
+  --era-font-heading: 'Inter', sans-serif;
+  --era-font-body: 'Inter', sans-serif;
+  --era-heading-weight: 700;
+  --era-letter-spacing: -0.03em;
+}
+
+/* ============================================
+   ERA 4: AI/FUTURE (2025+)
+   Experimental, neural, generative
+   ============================================ */
+
+[data-era="ai"] {
+  --era-bg: #030303;
+  --era-bg-secondary: #0a0a0f;
+  --era-text: #f0f0f0;
+  --era-text-secondary: #707080;
+  --era-accent: #a855f7;
+  --era-accent-secondary: #22d3ee;
+  --era-border: rgba(168, 85, 247, 0.2);
+  --era-border-radius: 16px;
+  --era-glow-intensity: 0.8;
+  --era-glow-color: rgba(168, 85, 247, 0.3);
+  --era-font-heading: 'Space Grotesk', sans-serif;
+  --era-font-body: 'Inter', sans-serif;
+  --era-heading-weight: 600;
+  --era-letter-spacing: -0.01em;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--era-font-body);
+  background-color: var(--era-bg);
+  color: var(--era-text);
+  transition: background-color 0.5s ease, color 0.3s ease;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--era-font-heading);
+  font-weight: var(--era-heading-weight);
+  letter-spacing: var(--era-letter-spacing);
+  line-height: 1.1;
+}
+
+code, pre {
+  font-family: var(--era-font-mono);
+}
+
+/* ============================================
+   TRANSITION EFFECTS
+   ============================================ */
+
+.transition-zone {
+  position: relative;
+}
+
+/* Glitch effect during transitions */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch-active {
+  animation: glitch 0.1s ease-in-out infinite;
+}
+
+/* Screen shake */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-active {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Scanline effect */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.1) 2px,
+    rgba(0, 0, 0, 0.1) 4px
+  );
+  pointer-events: none;
+  opacity: var(--transition-glitch, 0);
+}
+
+/* Noise overlay */
+.noise::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.era-card {
+  background: var(--era-bg-secondary);
+  border: 1px solid var(--era-border);
+  border-radius: var(--era-border-radius);
+  transition: all var(--era-transition-speed) ease;
+}
+
+.era-card:hover {
+  box-shadow: 0 0 calc(20px * var(--era-glow-intensity)) var(--era-glow-color);
+}
+
+.era-accent-text {
+  color: var(--era-accent);
+}
+
+.era-gradient-text {
+  background: linear-gradient(135deg, var(--era-accent), var(--era-accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--era-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--era-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--era-accent);
+}
+
+/* ============================================
+   SELECTION
+   ============================================ */
+
+::selection {
+  background: var(--era-accent);
+  color: var(--era-bg);
+}
