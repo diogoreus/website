@@ -1,0 +1,144 @@
+---
+/**
+ * ChromeText - Liquid metal/chrome text effect
+ * Inspired by 2000s 3D text effects, sci-fi movie titles, and Terminator aesthetics.
+ */
+
+interface Props {
+  text: string;
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'span' | 'div';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const { text, as: Tag = 'span', size = 'md', class: className = '' } = Astro.props;
+---
+
+<Tag class={`chrome-text chrome-text--${size} ${className}`}>
+  <span class="chrome-text-content" data-text={text}>{text}</span>
+  <span class="chrome-text-reflection" aria-hidden="true">{text}</span>
+</Tag>
+
+<style>
+  .chrome-text {
+    position: relative;
+    display: inline-block;
+    font-family: 'Inter', Arial, sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .chrome-text--sm {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+  }
+
+  .chrome-text--md {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .chrome-text--lg {
+    font-size: clamp(2rem, 7vw, 4rem);
+  }
+
+  .chrome-text--xl {
+    font-size: clamp(3rem, 10vw, 6rem);
+  }
+
+  .chrome-text-content {
+    position: relative;
+    display: block;
+    background: linear-gradient(
+      180deg,
+      #e8e8e8 0%,
+      #ffffff 10%,
+      #b8b8b8 20%,
+      #e8e8e8 30%,
+      #ffffff 40%,
+      #c0c0c0 50%,
+      #888888 60%,
+      #b0b0b0 70%,
+      #d8d8d8 80%,
+      #ffffff 90%,
+      #c8c8c8 100%
+    );
+    background-size: 100% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: chrome-shine 3s ease-in-out infinite;
+    filter:
+      drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4))
+      drop-shadow(0 0 20px rgba(0, 255, 255, 0.2));
+  }
+
+  .chrome-text-content::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.8) 45%,
+      rgba(255, 255, 255, 0.9) 50%,
+      rgba(255, 255, 255, 0.8) 55%,
+      transparent 60%,
+      transparent 100%
+    );
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: chrome-glint 4s ease-in-out infinite;
+    mix-blend-mode: overlay;
+  }
+
+  .chrome-text-reflection {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    transform: scaleY(-1) translateY(10%);
+    background: linear-gradient(
+      180deg,
+      rgba(200, 200, 200, 0.3) 0%,
+      rgba(200, 200, 200, 0.1) 30%,
+      transparent 60%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: blur(1px);
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  @keyframes chrome-shine {
+    0%, 100% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 0% 100%;
+    }
+  }
+
+  @keyframes chrome-glint {
+    0%, 100% {
+      background-position: -100% -100%;
+    }
+    50% {
+      background-position: 200% 200%;
+    }
+  }
+
+  /* Hover effect for interactive elements */
+  .chrome-text:hover .chrome-text-content {
+    animation-duration: 1s;
+    filter:
+      drop-shadow(0 2px 0 rgba(0, 0, 0, 0.3))
+      drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4))
+      drop-shadow(0 0 30px rgba(0, 255, 255, 0.4));
+  }
+</style>

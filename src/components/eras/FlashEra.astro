@@ -9,36 +9,24 @@
 
 import MetallicCard from '../flash/MetallicCard.astro';
 import GradientOrb from '../flash/GradientOrb.astro';
-import WinampPlayer from '../flash/WinampPlayer.astro';
+import GlassOrb from '../flash/GlassOrb.astro';
+import ChromeText from '../flash/ChromeText.astro';
+import WinampPlayer from '../flash/WinampPlayer.tsx';
 import { Microscope, Gamepad2, Car, Building2 } from '@lucide/astro';
 
 const projects = [
   {
-    title: 'LANTEC - UFSC',
-    subtitle: 'Flash AS3 Developer • 2010-2011',
-    description: 'My first professional gig at the university\'s multimedia lab. Researching technology in education — turns out, that would become my entire career.',
-    tech: ['Flash', 'AS3', 'EdTech'],
+    title: 'LANTEC Research Lab',
+    subtitle: 'Flash AS3 Developer • UFSC • 2010-2011',
+    description: 'First steps in EdTech at the university multimedia lab. Where pixels met pedagogy.',
+    tech: ['Flash', 'AS3', 'EdTech Research'],
     iconComponent: 'microscope'
   },
   {
-    title: 'VW SpaceCross Game',
-    subtitle: 'Interactive Mini-Game • Mobiliza',
-    description: 'A point-and-click challenge game for Volkswagen. Corporate training disguised as entertainment — my specialty.',
-    tech: ['ActionScript', 'Game Dev', 'VW'],
-    iconComponent: 'gamepad'
-  },
-  {
-    title: 'Garagem VW Training',
-    subtitle: 'E-Learning Course • Mobiliza',
-    description: 'Step-by-step vehicle presentation courses. Teaching salespeople how to show off cars, one Flash animation at a time.',
-    tech: ['SCORM', 'E-Learning', 'Flex'],
-    iconComponent: 'car'
-  },
-  {
-    title: 'BRF & Senior Projects',
-    subtitle: 'Corporate Training • Mobiliza',
-    description: 'Interactive courses and games for major Brazilian enterprises. Cross-functional collaboration before it was a buzzword.',
-    tech: ['Flash', 'Interactive', 'B2B'],
+    title: 'Mobiliza Projects',
+    subtitle: 'Flash Developer • 2011-2012',
+    description: 'VW, BRF, Senior — games and courses for enterprise clients. Corporate training disguised as entertainment.',
+    tech: ['ActionScript', 'SCORM', 'E-Learning', 'Game Dev'],
     iconComponent: 'building'
   }
 ];
@@ -90,6 +78,19 @@ const stats = [
 
     <!-- Diagonal grid pattern -->
     <div class="diagonal-grid"></div>
+
+    <!-- CRT Scanlines -->
+    <div class="crt-scanlines"></div>
+
+    <!-- Floating bubbles / blobjects -->
+    <div class="bubbles-layer">
+      <div class="bubble bubble-1"></div>
+      <div class="bubble bubble-2"></div>
+      <div class="bubble bubble-3"></div>
+      <div class="bubble bubble-4"></div>
+      <div class="bubble bubble-5"></div>
+      <div class="bubble bubble-6"></div>
+    </div>
   </div>
 
   <!-- Main content with perspective -->
@@ -116,18 +117,18 @@ const stats = [
     <!-- Main heading with reflection -->
     <div class="heading-container animate-in">
       <h2 class="flash-heading">
-        <span class="heading-line">Designer by</span>
-        <span class="heading-line heading-accent">Education</span>
+        <span class="heading-line">Graphic Design</span>
+        <span class="heading-line heading-accent">Graduate</span>
       </h2>
       <div class="heading-reflection" aria-hidden="true">
-        <span class="heading-line">Designer by</span>
-        <span class="heading-line">Education</span>
+        <span class="heading-line">Graphic Design</span>
+        <span class="heading-line">Graduate</span>
       </div>
     </div>
 
     <p class="flash-intro animate-in">
-      Where it all began. University lab experiments, ActionScript 3, and the thrill of
-      making pixels dance. Building interactive games and courses before "UX" was a job title.
+      Fresh out of UFSC with a Graphic Design degree. University lab experiments,
+      ActionScript 3, and the thrill of making pixels dance.
     </p>
 
     <!-- Two-column diagonal layout -->
@@ -154,7 +155,7 @@ const stats = [
       <div class="decorative-column">
         <!-- Winamp player -->
         <div class="winamp-container animate-in">
-          <WinampPlayer trackName="career_mixtape.mp3" artist="Diogo Reus" />
+          <WinampPlayer client:visible />
         </div>
 
         <!-- Floating stats orbs -->
@@ -168,6 +169,13 @@ const stats = [
               <div class="orb-ring"></div>
             </div>
           ))}
+        </div>
+
+        <!-- Glass orbs decorative cluster -->
+        <div class="glass-orbs-cluster animate-in">
+          <GlassOrb size="lg" color="cyan" />
+          <GlassOrb size="md" color="magenta" class="orb-offset-1" />
+          <GlassOrb size="sm" color="blue" class="orb-offset-2" />
         </div>
 
         <!-- Circular tech showcase - Core Skills -->
@@ -303,6 +311,161 @@ const stats = [
       );
     background-size: 60px 60px;
     opacity: 0.5;
+  }
+
+  /* CRT Scanlines effect */
+  .crt-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 1px,
+      rgba(0, 0, 0, 0.15) 1px,
+      rgba(0, 0, 0, 0.15) 2px
+    );
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .crt-scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      rgba(0, 0, 0, 0.2) 100%
+    );
+  }
+
+  /* Floating bubbles / blobjects */
+  .bubbles-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse at 30% 30%,
+      rgba(255, 255, 255, 0.4) 0%,
+      rgba(0, 255, 255, 0.15) 40%,
+      rgba(255, 0, 255, 0.1) 70%,
+      transparent 100%
+    );
+    box-shadow:
+      inset 0 0 20px rgba(255, 255, 255, 0.2),
+      0 0 30px rgba(0, 255, 255, 0.1);
+    opacity: 0.6;
+  }
+
+  .bubble::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 30%;
+    height: 20%;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      transparent 100%
+    );
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+
+  .bubble-1 {
+    width: 120px;
+    height: 120px;
+    top: 10%;
+    left: 5%;
+    animation: bubble-float-1 15s ease-in-out infinite;
+  }
+
+  .bubble-2 {
+    width: 80px;
+    height: 80px;
+    top: 60%;
+    left: 10%;
+    animation: bubble-float-2 12s ease-in-out infinite;
+    animation-delay: -3s;
+  }
+
+  .bubble-3 {
+    width: 60px;
+    height: 60px;
+    top: 30%;
+    right: 15%;
+    animation: bubble-float-3 18s ease-in-out infinite;
+    animation-delay: -7s;
+  }
+
+  .bubble-4 {
+    width: 100px;
+    height: 100px;
+    bottom: 20%;
+    right: 8%;
+    animation: bubble-float-1 20s ease-in-out infinite;
+    animation-delay: -5s;
+  }
+
+  .bubble-5 {
+    width: 40px;
+    height: 40px;
+    top: 45%;
+    left: 25%;
+    animation: bubble-float-2 14s ease-in-out infinite;
+    animation-delay: -10s;
+  }
+
+  .bubble-6 {
+    width: 70px;
+    height: 70px;
+    bottom: 35%;
+    left: 60%;
+    animation: bubble-float-3 16s ease-in-out infinite;
+    animation-delay: -2s;
+  }
+
+  @keyframes bubble-float-1 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    25% {
+      transform: translate(20px, -30px) scale(1.05);
+    }
+    50% {
+      transform: translate(-10px, -50px) scale(0.95);
+    }
+    75% {
+      transform: translate(15px, -20px) scale(1.02);
+    }
+  }
+
+  @keyframes bubble-float-2 {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(-25px, -20px) scale(1.08);
+    }
+    66% {
+      transform: translate(15px, -40px) scale(0.92);
+    }
+  }
+
+  @keyframes bubble-float-3 {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(-30px, -35px) rotate(180deg);
+    }
   }
 
   /* Content container */
@@ -541,6 +704,30 @@ const stats = [
 
   .winamp-container {
     align-self: flex-end;
+  }
+
+  /* Glass orbs cluster */
+  .glass-orbs-cluster {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    padding: 1rem;
+  }
+
+  .glass-orbs-cluster :global(.orb-offset-1) {
+    position: absolute;
+    top: 0;
+    right: 20%;
+    animation-delay: -1.5s;
+  }
+
+  .glass-orbs-cluster :global(.orb-offset-2) {
+    position: absolute;
+    bottom: 10%;
+    left: 25%;
+    animation-delay: -3s;
   }
 
   /* Stats orbs */
@@ -804,6 +991,8 @@ const stats = [
 
     let mouseX = 0;
     let mouseY = 0;
+    let lastClientX = 0;
+    let lastClientY = 0;
     const positions = trails.map(() => ({ x: 0, y: 0 }));
     let isInSection = false;
 
@@ -818,11 +1007,20 @@ const stats = [
     observer.observe(flashSection);
 
     document.addEventListener('mousemove', (e) => {
+      lastClientX = e.clientX;
+      lastClientY = e.clientY;
       if (isInSection) {
         mouseX = e.clientX;
         mouseY = e.clientY;
       }
     });
+
+    window.addEventListener('scroll', () => {
+      if (isInSection) {
+        mouseX = lastClientX;
+        mouseY = lastClientY;
+      }
+    }, { passive: true });
 
     function animateTrail() {
       positions[0].x += (mouseX - positions[0].x) * 0.25;
