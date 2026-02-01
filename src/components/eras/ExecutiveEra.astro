@@ -61,12 +61,14 @@ const roles = [
 const products = [
   {
     name: 'Applique',
+    url: 'https://mobiliza.com.br/applique/',
     iconComponent: 'filetext',
     description: 'Brazil\'s largest e-learning authoring tool. SCORM-compliant, no-code content creation with 1M+ assets.',
     stats: ['100+ clients', '50+ internal users']
   },
   {
     name: 'Plataforma Mobiliza',
+    url: 'https://mobiliza.com.br/plataforma-lms/',
     iconComponent: 'graduationcap',
     description: 'Cloud-based LMS with gamification, workflow automations, and leadership dashboards.',
     stats: ['API integrations', 'Analytics']
@@ -136,7 +138,7 @@ const recognition = [
         <p class="metric-context">2024 ARR • Bootstrapped</p>
         <div class="metric-chart">
           <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path d="M0,35 Q20,32 40,30 T80,25 T120,18 T160,12 T200,5" fill="none" stroke="url(#chartGradient)" stroke-width="2"/>
+            <path d="M0,38 L20,35 L35,32 L50,34 L65,28 L80,31 L100,24 L120,26 L140,18 L160,20 L180,10 L200,5" fill="none" stroke="url(#chartGradient)" stroke-width="2"/>
             <defs>
               <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#0070f3" stop-opacity="0.3"/>
@@ -262,19 +264,21 @@ const recognition = [
       <h3 class="section-title">Products</h3>
       <div class="products-grid">
         {products.map((product) => (
-          <div class="product-card">
-            <div class="product-icon">
-              {product.iconComponent === 'filetext' && <FileText size={32} />}
-              {product.iconComponent === 'graduationcap' && <GraduationCap size={32} />}
+          <a href={product.url} target="_blank" rel="noopener noreferrer" class="product-link">
+            <div class="product-card">
+              <div class="product-icon">
+                {product.iconComponent === 'filetext' && <FileText size={32} />}
+                {product.iconComponent === 'graduationcap' && <GraduationCap size={32} />}
+              </div>
+              <h4 class="product-name">{product.name}</h4>
+              <p class="product-desc">{product.description}</p>
+              <div class="product-stats">
+                {product.stats.map((stat) => (
+                  <span class="stat-tag">{stat}</span>
+                ))}
+              </div>
             </div>
-            <h4 class="product-name">{product.name}</h4>
-            <p class="product-desc">{product.description}</p>
-            <div class="product-stats">
-              {product.stats.map((stat) => (
-                <span class="stat-tag">{stat}</span>
-              ))}
-            </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
@@ -718,6 +722,12 @@ const recognition = [
     }
   }
 
+  .product-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
   .product-card {
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -726,7 +736,7 @@ const recognition = [
     transition: all 0.2s ease;
   }
 
-  .product-card:hover {
+  .product-link:hover .product-card {
     background: rgba(255, 255, 255, 0.04);
     border-color: rgba(0, 112, 243, 0.3);
     transform: translateY(-4px);
