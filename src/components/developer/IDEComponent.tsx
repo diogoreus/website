@@ -1137,7 +1137,7 @@ export default function IDEComponent() {
           <span className="light light-maximize"></span>
         </div>
         <div className="titlebar-center">
-          <span className="title-text">{filename} — Visual Studio Code</span>
+          <span className="title-text">{filename} - Visual Studio Code</span>
         </div>
         <div className="titlebar-actions">
           <button className="action-btn" aria-label="Toggle panel" onClick={() => setShowPanel(!showPanel)}>

@@ -6,11 +6,11 @@
 
 ## Executive Summary
 
-Diogo is a rare "3-in-1 professional"—designer by education, developer by passion, executive by challenge—who spent 13+ years transforming a Brazilian services company into a $10M ARR EdTech SaaS market leader, then joined AE Studio to lead one of the most ambitious AI curriculum projects in K-12 education history.
+Diogo is a product leader and SaaS veteran who spent 13+ years transforming a Brazilian services company into a $10M ARR EdTech SaaS market leader, then joined AE Studio to lead one of the most ambitious AI curriculum projects in K-12 education history.
 
 **Career arc:** Flash Developer → Tech Lead → Head of Product → CPO → CGO → AI Technical Product Manager
 
-**Signature achievement:** Led the Alpha Incept project generating a complete Grades 3-8 Language Arts curriculum (595 lessons, 66k+ validated questions, 595 videos) in 6 months using GPT-5 pipelines—with 91.9% quality rating vs. industry benchmark and +17.8 percentage point student test score improvement.
+**Signature achievement:** Led the Alpha Incept project generating a complete Grades 3-8 Language Arts curriculum (595 lessons, 66k+ validated questions, 595 videos) in 6 months using GPT-5 pipelines, with 91.9% quality rating vs. industry benchmark and +17.8 percentage point student test score improvement.
 
 ---
 
@@ -92,9 +92,9 @@ Alpha School needed a complete Grades 3-8 Language Arts curriculum for the new s
 ## Mobiliza: The Transformation Story
 
 ### Context
-Diogo didn't join a startup—he transformed one. Mobiliza existed before him as a traditional services company building websites and custom projects. Over 13+ years, Diogo led its evolution into a B2B SaaS EdTech market leader with two flagship products.
+Diogo didn't join a startup. He transformed one. Mobiliza existed before him as a traditional services company building websites and custom projects. Over 13+ years, Diogo led its evolution into a B2B SaaS EdTech market leader with two flagship products.
 
-**Key insight:** Transformation is harder than greenfield—requires changing culture, retaining/retraining staff, maintaining revenue while pivoting, and converting existing clients to new products.
+**Key insight:** Transformation is harder than greenfield. It requires changing culture, retaining/retraining staff, maintaining revenue while pivoting, and converting existing clients to new products.
 
 ### Company Profile (Current State)
 - **Company:** [Mobiliza - EaD](https://www.linkedin.com/company/807220/) | [Website](https://mobiliza.com.br/)
@@ -115,14 +115,14 @@ Diogo didn't join a startup—he transformed one. Mobiliza existed before him as
 
 ### Products Built/Led
 
-**1. Applique** — Brazil's largest e-learning authoring tool
+**1. Applique** - Brazil's largest e-learning authoring tool
 - SCORM-compliant, no-code content creation platform
 - 1M+ images, icons, and animations in asset library
 - AI integration for content generation
 - 100+ contracting clients
 - 50+ internal professionals using it
 
-**2. Plataforma Mobiliza** — Cloud-based LMS
+**2. Plataforma Mobiliza** - Cloud-based LMS
 - Gamification, workflow automations, API integrations
 - Leadership dashboards and analytics
 
@@ -281,8 +281,8 @@ MobilizaCast contributor (T&D-focused)
 
 **From LinkedIn About:**
 > "I love building products but hate selling myself. So here are six quick facts about me and my work:
-> 1) I transformed a startup into a market leader, scaling from zero to millions in recurring revenue. Built products used by brands you know well - Tok&Stok, Banco do Brasil, VW, Embraer.
-> 2) I'm a 3-in-1 professional: Designer by education, developer by passion, and executive by challenge.
+> 1) I transformed a startup into a market leader, scaling from zero to millions in recurring revenue. Built products used by brands you know well: Tok&Stok, Banco do Brasil, VW, Embraer.
+> 2) I'm a designer by education who chose to become a developer, then grew into an executive.
 > 3) My journey is a bit different. Started as a frontend developer, became tech lead, then head of product, CPO, and finally CGO. In each role, I kept my hands in the code (or at least close to it). I believe the best leaders deeply understand what they're building."
 
 **On Leadership:**
@@ -295,7 +295,7 @@ MobilizaCast contributor (T&D-focused)
 
 ## Key Differentiators
 
-1. **Rare hybrid:** Designer + Developer + Executive in one person
+1. **Rare hybrid:** Designer by education, developer by choice, executive by challenge
 2. **Transformation leader:** Rebuilt Mobiliza from services to $10M ARR SaaS
 3. **Enterprise credibility:** Delivered for Volkswagen, Banco do Brasil, Embraer, Santander
 4. **EdTech depth:** 15+ years exclusively in learning/training technology
@@ -316,12 +316,12 @@ MobilizaCast contributor (T&D-focused)
 
 ## About Alpha School (Client Context)
 
-**Model:** AI-powered "2 Hour Learning" — students complete academics in 2 hours via adaptive technology, remaining time for life skills and passion projects.
+**Model:** AI-powered "2 Hour Learning" where students complete academics in 2 hours via adaptive technology, with remaining time for life skills and passion projects.
 
 **Founders:**
-- MacKenzie Price (Co-founder) — Stanford psychology
-- Andrew Price (Co-founder) — CFO at Trilogy/ESW Capital
-- Joe Liemandt (Principal) — Billionaire, committed $1B and 20 years to education
+- MacKenzie Price (Co-founder) - Stanford psychology
+- Andrew Price (Co-founder) - CFO at Trilogy/ESW Capital
+- Joe Liemandt (Principal) - Billionaire, committed $1B and 20 years to education
 
 **Investment:** $100M+ in gamified AI learning systems
 
@@ -343,6 +343,6 @@ MobilizaCast contributor (T&D-focused)
 
 1. **Other AE Studio projects?** Any notable work beyond Alpha Incept?
 2. **Certifications?** PMP, CSPO, or technical certs?
-3. **Speaking engagements?** CBTD 2019 — did you present?
-4. **Languages?** Portuguese, English — others?
+3. **Speaking engagements?** CBTD 2019: did you present?
+4. **Languages?** Portuguese, English, others?
 5. **Equity exit details?** Comfortable sharing any numbers on Mobiliza stake sale?
