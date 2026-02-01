@@ -90,25 +90,71 @@ const stats = [
       <IDEComponent client:visible />
     </div>
 
-    <!-- Tech Stack Grid -->
-    <div class="tech-stack-section animate-in">
-      <h3 class="section-title">
-        <span class="comment">// </span>dependencies.json
-      </h3>
-      <div class="tech-grid">
-        {techStack.map((tech) => (
-          <div class="tech-item" style={`--tech-color: ${tech.color}`}>
-            <span class="tech-icon">
-              {tech.iconComponent === 'atom' && <Atom size={20} />}
-              {tech.iconComponent === 'circledot' && <CircleDot size={20} />}
-              {tech.iconComponent === 'leaf' && <Leaf size={20} />}
-              {tech.iconComponent === 'cloud' && <Cloud size={20} />}
-              {tech.iconComponent === 'wrench' && <Wrench size={20} />}
-              {tech.iconComponent === 'package' && <Package size={20} />}
-            </span>
-            <span class="tech-name">{tech.name}</span>
+    <!-- Combined Skills Section -->
+    <div class="skills-combined-section animate-in">
+      <div class="skills-row">
+        <!-- Left: dependencies.json -->
+        <div class="skills-column">
+          <h3 class="section-title">
+            <span class="comment">// </span>dependencies.json
+          </h3>
+          <div class="tech-grid">
+            {techStack.map((tech) => (
+              <div class="tech-item" style={`--tech-color: ${tech.color}`}>
+                <span class="tech-icon">
+                  {tech.iconComponent === 'atom' && <Atom size={20} />}
+                  {tech.iconComponent === 'circledot' && <CircleDot size={20} />}
+                  {tech.iconComponent === 'leaf' && <Leaf size={20} />}
+                  {tech.iconComponent === 'cloud' && <Cloud size={20} />}
+                  {tech.iconComponent === 'wrench' && <Wrench size={20} />}
+                  {tech.iconComponent === 'package' && <Package size={20} />}
+                </span>
+                <span class="tech-name">{tech.name}</span>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <!-- Right: tech-lead.skills -->
+        <div class="skills-column">
+          <h3 class="section-title">
+            <span class="comment">// </span>tech-lead.skills
+          </h3>
+          <div class="skills-grid">
+            <div class="skill-card">
+              <span class="skill-icon"><Building2 size={20} /></span>
+              <span class="skill-name">System Architecture</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><FlaskConical size={20} /></span>
+              <span class="skill-name">Testing Strategy</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><Palette size={20} /></span>
+              <span class="skill-name">Design Systems</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><ClipboardList size={20} /></span>
+              <span class="skill-name">Agile / Scrum</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><Users size={20} /></span>
+              <span class="skill-name">Team Management</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><FileCode size={20} /></span>
+              <span class="skill-name">Code Review</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><RefreshCcw size={20} /></span>
+              <span class="skill-name">CI/CD Pipelines</span>
+            </div>
+            <div class="skill-card">
+              <span class="skill-icon"><BarChart3 size={20} /></span>
+              <span class="skill-name">Technical Planning</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -139,47 +185,6 @@ const stats = [
             </ul>
           </div>
         ))}
-      </div>
-    </div>
-
-    <!-- Tech Lead Skills -->
-    <div class="skills-section animate-in">
-      <h3 class="section-title">
-        <span class="comment">// </span>tech-lead.skills
-      </h3>
-      <div class="skills-grid">
-        <div class="skill-card">
-          <span class="skill-icon"><Building2 size={20} /></span>
-          <span class="skill-name">System Architecture</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><FlaskConical size={20} /></span>
-          <span class="skill-name">Testing Strategy</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><Palette size={20} /></span>
-          <span class="skill-name">Design Systems</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><ClipboardList size={20} /></span>
-          <span class="skill-name">Agile / Scrum</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><Users size={20} /></span>
-          <span class="skill-name">Team Management</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><FileCode size={20} /></span>
-          <span class="skill-name">Code Review</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><RefreshCcw size={20} /></span>
-          <span class="skill-name">CI/CD Pipelines</span>
-        </div>
-        <div class="skill-card">
-          <span class="skill-icon"><BarChart3 size={20} /></span>
-          <span class="skill-name">Technical Planning</span>
-        </div>
       </div>
     </div>
 
@@ -306,9 +311,19 @@ const stats = [
     margin-bottom: 4rem;
   }
 
-  /* Tech stack section */
-  .tech-stack-section {
+  /* Combined skills section */
+  .skills-combined-section {
     margin-bottom: 4rem;
+  }
+
+  .skills-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .skills-column {
+    min-width: 0;
   }
 
   .section-title {
@@ -480,11 +495,7 @@ const stats = [
     text-transform: lowercase;
   }
 
-  /* Skills section */
-  .skills-section {
-    margin-bottom: 4rem;
-  }
-
+  /* Skills grid (inside skills-column) */
   .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -524,6 +535,13 @@ const stats = [
   }
 
   /* Mobile responsive */
+  @media (max-width: 900px) {
+    .skills-row {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+  }
+
   @media (max-width: 768px) {
     .developer-era {
       padding: 4rem 1rem 6rem;
@@ -540,5 +558,39 @@ const stats = [
     .skills-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .tech-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
+
+<script>
+  // Global shutdown overlay handler for rm-rf easter egg
+  window.addEventListener('ideShutdown', (event: CustomEvent<{ duration: number }>) => {
+    const root = document.getElementById('global-overlay-root');
+    if (!root) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'global-shutdown-overlay';
+    overlay.innerHTML = `
+      <div class="shutdown-line"></div>
+      <div class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <span>Rebooting system...</span>
+      </div>
+    `;
+    root.appendChild(overlay);
+
+    // Show loading after line collapse
+    setTimeout(() => {
+      overlay.querySelector('.loading-indicator')?.classList.add('visible');
+    }, 700);
+
+    // Fade out and remove
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+      setTimeout(() => overlay.remove(), 500);
+    }, event.detail.duration);
+  });
+</script>

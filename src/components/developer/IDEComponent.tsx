@@ -927,8 +927,10 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
     { type: 'output', content: "Type 'help' for available commands.\n" },
   ]);
   const [input, setInput] = useState('');
+  const [showHint, setShowHint] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const hintText = 'sudo rm -rf /';
 
   const processCommand = useCallback((cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase();
@@ -979,6 +981,11 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       processCommand(input);
+    } else if (e.key === 'Tab') {
+      e.preventDefault();
+      if (input === '' || hintText.toLowerCase().startsWith(input.toLowerCase())) {
+        setInput(hintText);
+      }
     }
   };
 
@@ -1001,16 +1008,23 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
       ))}
       <div className="terminal-input-line">
         <span className="terminal-prompt">$</span>
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="terminal-input"
-          autoComplete="off"
-          spellCheck={false}
-        />
+        <div className="terminal-input-wrapper">
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setShowHint(true)}
+            onBlur={() => setShowHint(false)}
+            className="terminal-input"
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {showHint && input === '' && (
+            <span className="terminal-hint">{hintText}</span>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1071,6 +1085,8 @@ export default function IDEComponent() {
 
   const handleShutdown = useCallback(() => {
     setIsShuttingDown(true);
+    // Dispatch global event for site-wide overlay
+    window.dispatchEvent(new CustomEvent('ideShutdown', { detail: { duration: 3000 } }));
     // Reset after 3 seconds
     setTimeout(() => {
       setIsShuttingDown(false);
@@ -1113,12 +1129,6 @@ export default function IDEComponent() {
 
   return (
     <div className={`ide-component ${isShuttingDown ? 'shutting-down' : ''}`}>
-      {/* Shutdown overlay */}
-      {isShuttingDown && (
-        <div className="shutdown-overlay">
-          <div className="shutdown-line"></div>
-        </div>
-      )}
       {/* Title bar */}
       <div className="ide-titlebar">
         <div className="traffic-lights">
@@ -1736,14 +1746,32 @@ export default function IDEComponent() {
           color: #3fb950;
         }
 
-        .terminal-input {
+        .terminal-input-wrapper {
+          position: relative;
           flex: 1;
+        }
+
+        .terminal-input {
+          width: 100%;
           background: transparent;
           border: none;
           color: #c9d1d9;
           font-family: 'JetBrains Mono', monospace;
           font-size: 0.8rem;
           outline: none;
+        }
+
+        .terminal-hint {
+          position: absolute;
+          left: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #8b949e;
+          opacity: 0.35;
+          pointer-events: none;
+          font-family: 'JetBrains Mono', monospace;
+          font-size: 0.8rem;
+          white-space: nowrap;
         }
 
         /* Problems panel */
