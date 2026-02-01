@@ -268,3 +268,100 @@ code, pre {
   background: var(--era-accent);
   color: var(--era-bg);
 }
+
+/* ============================================
+   GLOBAL SHUTDOWN OVERLAY (rm-rf easter egg)
+   ============================================ */
+
+#global-overlay-root {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.global-shutdown-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: globalTvShutdown 0.4s ease-out forwards;
+  pointer-events: all;
+}
+
+.global-shutdown-overlay .shutdown-line {
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;
+  animation: globalLineCollapse 0.3s ease-out 0.2s forwards;
+}
+
+.global-shutdown-overlay .loading-indicator {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #3fb950;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.global-shutdown-overlay .loading-indicator.visible {
+  opacity: 1;
+}
+
+.global-shutdown-overlay .loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid transparent;
+  border-top-color: #3fb950;
+  border-radius: 50%;
+  animation: globalSpin 1s linear infinite;
+}
+
+.global-shutdown-overlay.fade-out {
+  animation: globalFadeOut 0.5s ease forwards;
+}
+
+@keyframes globalTvShutdown {
+  0% {
+    background: #1e1e1e;
+  }
+  30% {
+    background: #fff;
+  }
+  100% {
+    background: #000;
+  }
+}
+
+@keyframes globalLineCollapse {
+  0% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}
+
+@keyframes globalSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes globalFadeOut {
+  to {
+    opacity: 0;
+  }
+}
