@@ -9,18 +9,22 @@
 
 import IDEComponent from '../developer/IDEComponent';
 import {
-  Atom, CircleDot, Leaf, Cloud, Wrench, Package,
+  Atom, CircleDot, Leaf, Cloud,
   Keyboard, Briefcase,
-  Building2, FlaskConical, Palette, ClipboardList, Users, FileCode, RefreshCcw, BarChart3
+  Building2, FlaskConical, Palette, ClipboardList, Users, FileCode, RefreshCcw, BarChart3,
+  Braces, FileType, Terminal, Database
 } from '@lucide/astro';
 
 const techStack = [
-  { name: 'Backbone.js', iconComponent: 'atom', color: '#0071B5' },
+  { name: 'JavaScript', iconComponent: 'braces', color: '#F7DF1E' },
+  { name: 'TypeScript', iconComponent: 'filetype', color: '#3178C6' },
+  { name: 'React', iconComponent: 'atom', color: '#61DAFB' },
+  { name: 'CSS', iconComponent: 'palette', color: '#264de4' },
+  { name: 'Python', iconComponent: 'terminal', color: '#3776AB' },
   { name: 'Node.js', iconComponent: 'circledot', color: '#339933' },
   { name: 'MongoDB', iconComponent: 'leaf', color: '#47A248' },
+  { name: 'PostgreSQL', iconComponent: 'database', color: '#336791' },
   { name: 'AWS', iconComponent: 'cloud', color: '#FF9900' },
-  { name: 'Chef', iconComponent: 'wrench', color: '#F09820' },
-  { name: 'SCORM', iconComponent: 'package', color: '#58a6ff' },
 ];
 
 const roles = [
@@ -106,8 +110,11 @@ const stats = [
                   {tech.iconComponent === 'circledot' && <CircleDot size={20} />}
                   {tech.iconComponent === 'leaf' && <Leaf size={20} />}
                   {tech.iconComponent === 'cloud' && <Cloud size={20} />}
-                  {tech.iconComponent === 'wrench' && <Wrench size={20} />}
-                  {tech.iconComponent === 'package' && <Package size={20} />}
+                  {tech.iconComponent === 'braces' && <Braces size={20} />}
+                  {tech.iconComponent === 'filetype' && <FileType size={20} />}
+                  {tech.iconComponent === 'palette' && <Palette size={20} />}
+                  {tech.iconComponent === 'terminal' && <Terminal size={20} />}
+                  {tech.iconComponent === 'database' && <Database size={20} />}
                 </span>
                 <span class="tech-name">{tech.name}</span>
               </div>
@@ -308,12 +315,12 @@ const stats = [
 
   /* IDE wrapper */
   .ide-wrapper {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
   }
 
   /* Combined skills section */
   .skills-combined-section {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
   }
 
   .skills-row {
@@ -330,7 +337,7 @@ const stats = [
     font-family: 'JetBrains Mono', monospace;
     font-size: 1rem;
     color: #c9d1d9;
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 2.5rem 0;
   }
 
   .comment {
@@ -340,7 +347,7 @@ const stats = [
   .tech-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .tech-item {
@@ -378,13 +385,13 @@ const stats = [
 
   /* Roles section */
   .roles-section {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
   }
 
   .roles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
   }
 
   .role-card {
@@ -499,7 +506,7 @@ const stats = [
   .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .skill-card {

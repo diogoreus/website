@@ -90,14 +90,6 @@ const recognition = [
   </div>
 
   <div class="executive-content">
-    <!-- Keyboard shortcut hint -->
-    <div class="keyboard-hint animate-in">
-      <span class="hint-text">Press</span>
-      <kbd>⌘</kbd>
-      <kbd>K</kbd>
-      <span class="hint-text">to search</span>
-    </div>
-
     <!-- Era badge -->
     <div class="era-badge animate-in">
       <div class="badge-dot"></div>
@@ -124,7 +116,23 @@ const recognition = [
     <!-- Metrics dashboard grid -->
     <div class="dashboard-grid">
       <!-- Revenue metric - large -->
-      <div class="dash-card dash-card--metric dash-card--large">
+      <div class="dash-card dash-card--metric dash-card--large dash-card--with-chart">
+        <div class="chart-background">
+          <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0070f3" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#0070f3" stop-opacity="0.8"/>
+              </linearGradient>
+              <linearGradient id="chartFill" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0070f3" stop-opacity="0.15"/>
+                <stop offset="100%" stop-color="#0070f3" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,90 L28,85 L50,88 L80,72 L105,76 L135,55 L160,48 L200,25 L200,100 L0,100 Z" fill="url(#chartFill)"/>
+            <path d="M0,90 L28,85 L50,88 L80,72 L105,76 L135,55 L160,48 L200,25" fill="none" stroke="url(#chartGradient)" stroke-width="2.5"/>
+          </svg>
+        </div>
         <div class="card-header">
           <span class="card-label">Annual Revenue</span>
           <span class="status-badge status-badge--live">
@@ -136,17 +144,6 @@ const recognition = [
           <AnimatedCounter value={9.8} prefix="$" suffix="M" decimals={1} />
         </div>
         <p class="metric-context">2024 ARR • Bootstrapped</p>
-        <div class="metric-chart">
-          <svg viewBox="0 0 200 40" preserveAspectRatio="none">
-            <path d="M0,38 L20,35 L35,32 L50,34 L65,28 L80,31 L100,24 L120,26 L140,18 L160,20 L180,10 L200,5" fill="none" stroke="url(#chartGradient)" stroke-width="2"/>
-            <defs>
-              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#0070f3" stop-opacity="0.3"/>
-                <stop offset="100%" stop-color="#0070f3"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
       </div>
 
       <!-- Growth metric -->
@@ -347,34 +344,6 @@ const recognition = [
     margin: 0 auto;
   }
 
-  /* Keyboard hint */
-  .keyboard-hint {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    padding: 0.4rem 0.75rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    font-size: 0.75rem;
-    color: #666;
-  }
-
-  .keyboard-hint kbd {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
-    padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    color: #888;
-  }
-
-  .hint-text {
-    color: #555;
-  }
-
   /* Era badge */
   .era-badge {
     display: inline-flex;
@@ -561,15 +530,27 @@ const recognition = [
     margin: 0;
   }
 
-  .metric-chart {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    height: 40px;
+  .dash-card--with-chart {
+    position: relative;
+    overflow: hidden;
   }
 
-  .metric-chart svg {
+  .chart-background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .chart-background svg {
     width: 100%;
     height: 100%;
+  }
+
+  .dash-card--with-chart .card-header,
+  .dash-card--with-chart .metric-value,
+  .dash-card--with-chart .metric-context {
+    position: relative;
+    z-index: 1;
   }
 
   .progress-bar {
@@ -867,10 +848,6 @@ const recognition = [
   @media (max-width: 768px) {
     .executive-era {
       padding: 4rem 1rem 6rem;
-    }
-
-    .keyboard-hint {
-      display: none;
     }
 
     .recognition-bar {
