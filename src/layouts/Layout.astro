@@ -45,8 +45,14 @@ const POSTHOG_API_KEY = import.meta.env.PUBLIC_POSTHOG_API_KEY;
     <script>
       import { initPostHog } from '../scripts/analytics';
 
+      declare global {
+        interface Window {
+          __POSTHOG_API_KEY__?: string;
+        }
+      }
+
       // Initialize PostHog if API key is available
-      const apiKey = (window as any).__POSTHOG_API_KEY__;
+      const apiKey = window.__POSTHOG_API_KEY__;
       if (apiKey) {
         initPostHog(apiKey);
       }

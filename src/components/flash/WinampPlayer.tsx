@@ -53,8 +53,8 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
       sourceRef.current = source;
-    } catch (e) {
-      console.warn('Web Audio API not supported');
+    } catch {
+      // Web Audio API not supported - spectrum analyzer will use simulated data
     }
   }, []);
 
@@ -154,7 +154,9 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
   useEffect(() => {
     if (audioRef.current && isPlaying) {
       audioRef.current.load();
-      audioRef.current.play().catch(() => {});
+      audioRef.current.play().catch(() => {
+        // Autoplay blocked by browser policy - user will click play manually
+      });
     }
   }, [currentTrackIndex]);
 
@@ -178,9 +180,8 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
       await audioRef.current.play();
       setIsPlaying(true);
       trackWinampControl('play', currentTrackIndex);
-    } catch (e) {
-      // Autoplay blocked - user interaction required
-      console.log('Playback requires user interaction');
+    } catch {
+      // Autoplay blocked by browser policy - user will click play manually
     }
   };
 

@@ -1,46 +1,77 @@
-# Astro Starter Kit: Basics
+# Diogo Reus - Portfolio Website
 
-```sh
-npm create astro@latest -- --template basics
+A personal portfolio showcasing a 15+ year career journey through four distinct visual "eras" that morph continuously as you scroll. Each era has a unique design language that smoothly interpolates to the next, creating an immersive storytelling experience.
+
+**[Live Site](https://diogoreus.me/)**
+
+![Portfolio Preview](./docs/preview.png)
+
+## The Era Morphing System
+
+The site's standout feature is scroll-driven visual transformations between career phases:
+
+| Era | Scroll Range | Visual Language |
+|-----|--------------|-----------------|
+| **Flash** (2010-2012) | 10-30% | Neon colors, glows, bold typography, Winamp player |
+| **Developer** (2012-2017) | 30-50% | IDE aesthetic, GitHub dark theme, monospace fonts |
+| **Executive** (2017-2024) | 50-75% | Modern SaaS style (Linear/shadcn), subtle gradients |
+| **AI** (2025+) | 75-100% | Particle systems, purple/cyan accents, experimental |
+
+The system uses CSS custom properties (`--era-*`) that update in real-time via GSAP ScrollTrigger, allowing any component to respond to scroll position.
+
+## Tech Stack
+
+- **[Astro](https://astro.build/)** - Static site generation with islands architecture
+- **[React 19](https://react.dev/)** - Interactive components (Three.js particle canvas, Winamp player)
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first styling via Vite plugin
+- **[GSAP](https://gsap.com/)** - Scroll-triggered animations and era morphing
+- **[Three.js](https://threejs.org/)** - WebGL particle effects in AI era
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Development server runs at `http://localhost:4321`
 
-## 🚀 Project Structure
+## Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```
+src/
+├── components/
+│   ├── eras/           # Full-page era sections
+│   ├── flash/          # Flash-era: GlossyCard, WinampPlayer, RadialNav
+│   ├── developer/      # IDE components: Terminal, CodeBlock, FileExplorer
+│   ├── executive/      # Business: BentoCard, AnimatedCounter, CommandPalette
+│   ├── ai/             # Experimental: ParticleText, ParticleCanvas (React)
+│   ├── morphing/       # Cross-era: MorphingNav, MorphingButton
+│   └── transitions/    # GlitchTransition effects
+├── scripts/
+│   └── era-morph.ts    # Core morphing system with CSS variable interpolation
+├── layouts/
+│   └── Layout.astro    # Base layout with analytics
+└── pages/
+    └── index.astro     # Main entry point
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+## Author
 
-## 🧞 Commands
+**Diogo Reus** - Designer, Developer, Executive, AI Builder
 
-All commands are run from the root of the project, from a terminal:
+- [LinkedIn](https://linkedin.com/in/diogoreus)
+- [GitHub](https://github.com/diogoreus)
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## License
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+MIT License - see [LICENSE](./LICENSE) for details.
