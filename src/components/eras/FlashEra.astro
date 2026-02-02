@@ -9,7 +9,6 @@
 
 import MetallicCard from '../flash/MetallicCard.astro';
 import GradientOrb from '../flash/GradientOrb.astro';
-import GlassOrb from '../flash/GlassOrb.astro';
 import ChromeText from '../flash/ChromeText.astro';
 import WinampPlayer from '../flash/WinampPlayer.tsx';
 import { Microscope, Gamepad2, Car, Building2 } from '@lucide/astro';
@@ -174,13 +173,6 @@ const stats = [
               <div class="orb-ring"></div>
             </div>
           ))}
-        </div>
-
-        <!-- Glass orbs decorative cluster -->
-        <div class="glass-orbs-cluster animate-in">
-          <GlassOrb size="lg" color="cyan" />
-          <GlassOrb size="md" color="magenta" class="orb-offset-1" />
-          <GlassOrb size="sm" color="blue" class="orb-offset-2" />
         </div>
 
         <!-- Circular tech showcase - Core Skills -->
@@ -580,30 +572,6 @@ const stats = [
 
   .winamp-container {
     align-self: flex-end;
-  }
-
-  /* Glass orbs cluster */
-  .glass-orbs-cluster {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    position: relative;
-    padding: 1rem;
-  }
-
-  .glass-orbs-cluster :global(.orb-offset-1) {
-    position: absolute;
-    top: 0;
-    right: 20%;
-    animation-delay: -1.5s;
-  }
-
-  .glass-orbs-cluster :global(.orb-offset-2) {
-    position: absolute;
-    bottom: 10%;
-    left: 25%;
-    animation-delay: -3s;
   }
 
   /* Stats orbs */
