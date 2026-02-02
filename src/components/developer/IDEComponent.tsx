@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { trackTerminalCommand, trackEasterEggFound, trackTerminalTabHint } from '../../scripts/analytics';
 
 // File content mapping based on bio.md and career data
 const fileContents: Record<string, { content: string; language: string }> = {
@@ -936,22 +937,38 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
     const trimmedCmd = cmd.trim().toLowerCase();
     const newHistory = [...history, { type: 'input' as const, content: `$ ${cmd}` }];
 
+    // Define easter egg commands
+    const easterEggCommands = ['sudo rm -rf /', 'sudo rm -rf /*', 'sudo rm -rf / --no-preserve-root', 'hire diogo', 'coffee'];
+
     if (trimmedCmd === 'clear') {
       setHistory([]);
+      trackTerminalCommand(trimmedCmd, false);
       return;
     }
 
     let output = terminalCommands[trimmedCmd];
+    const isEasterEgg = easterEggCommands.includes(trimmedCmd);
+
+    // Track the command
+    trackTerminalCommand(trimmedCmd, isEasterEgg);
 
     // Check for shutdown effect trigger
     if (output === '__SHUTDOWN_EFFECT__') {
       setHistory([...newHistory, { type: 'output', content: 'Deleting system files...' }]);
       setInput('');
+      trackEasterEggFound('sudo_rm_rf', { command: trimmedCmd });
       // Trigger the shutdown effect after a brief delay
       setTimeout(() => {
         onShutdown?.();
       }, 500);
       return;
+    }
+
+    // Track specific easter eggs
+    if (trimmedCmd === 'hire diogo') {
+      trackEasterEggFound('hire_diogo');
+    } else if (trimmedCmd === 'coffee') {
+      trackEasterEggFound('coffee');
     }
 
     if (!output) {
@@ -962,6 +979,10 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
         const content = fileContents[file];
         if (content) {
           output = content.content;
+          // Track .env file access as easter egg
+          if (file === '.env') {
+            trackEasterEggFound('env_secret', { method: 'cat' });
+          }
         } else {
           output = `cat: ${file}: No such file or directory`;
         }
@@ -985,6 +1006,7 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
       e.preventDefault();
       if (input === '' || hintText.toLowerCase().startsWith(input.toLowerCase())) {
         setInput(hintText);
+        trackTerminalTabHint(hintText);
       }
     }
   };
@@ -1097,6 +1119,10 @@ export default function IDEComponent() {
     setActiveFile(path);
     if (!openTabs.includes(path)) {
       setOpenTabs([...openTabs, path]);
+    }
+    // Track .env file click as easter egg
+    if (path === '.env') {
+      trackEasterEggFound('env_secret', { method: 'file_explorer' });
     }
   }, [openTabs]);
 

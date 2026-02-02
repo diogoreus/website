@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { trackWinampControl, trackWinampTrackChange, trackWinampInteraction } from '../../scripts/analytics';
 
 interface Track {
   title: string;
@@ -176,6 +177,7 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
     try {
       await audioRef.current.play();
       setIsPlaying(true);
+      trackWinampControl('play', currentTrackIndex);
     } catch (e) {
       // Autoplay blocked - user interaction required
       console.log('Playback requires user interaction');
@@ -185,6 +187,7 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
   const handlePause = () => {
     audioRef.current?.pause();
     setIsPlaying(false);
+    trackWinampControl('pause', currentTrackIndex);
   };
 
   const handleStop = () => {
@@ -193,14 +196,19 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
       audioRef.current.currentTime = 0;
     }
     setIsPlaying(false);
+    trackWinampControl('stop', currentTrackIndex);
   };
 
   const handlePrev = () => {
-    setCurrentTrackIndex(prev => (prev === 0 ? playlist.length - 1 : prev - 1));
+    const newIndex = currentTrackIndex === 0 ? playlist.length - 1 : currentTrackIndex - 1;
+    trackWinampTrackChange(currentTrackIndex, newIndex);
+    setCurrentTrackIndex(newIndex);
   };
 
   const handleNext = () => {
-    setCurrentTrackIndex(prev => (prev === playlist.length - 1 ? 0 : prev + 1));
+    const newIndex = currentTrackIndex === playlist.length - 1 ? 0 : currentTrackIndex + 1;
+    trackWinampTrackChange(currentTrackIndex, newIndex);
+    setCurrentTrackIndex(newIndex);
   };
 
   const handleVolumeChange = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -212,6 +220,7 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
     if (audioRef.current) {
       audioRef.current.volume = newVolume;
     }
+    trackWinampInteraction('volume', newVolume);
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -221,6 +230,7 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
     const newTime = (x / rect.width) * duration;
     audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
+    trackWinampInteraction('seek', newTime / duration);
   };
 
   const seekProgress = duration > 0 ? (currentTime / duration) * 100 : 0;

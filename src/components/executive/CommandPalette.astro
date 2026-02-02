@@ -347,6 +347,8 @@ const groupedCommands = commands.reduce((acc, cmd) => {
 </style>
 
 <script>
+  import { trackCommandPaletteOpened, trackCommandPaletteUsed } from '../../scripts/analytics';
+
   const palette = document.getElementById('command-palette');
   const searchInput = document.getElementById('palette-search') as HTMLInputElement;
   const commandItems = document.querySelectorAll('.command-item');
@@ -391,6 +393,10 @@ const groupedCommands = commands.reduce((acc, cmd) => {
     searchInput?.focus();
     selectedIndex = 0;
     updateSelection();
+
+    // Track command palette opened
+    const currentEra = document.documentElement.getAttribute('data-morph-era') || 'unknown';
+    trackCommandPaletteOpened(currentEra);
   }
 
   function closePalette() {
@@ -438,6 +444,12 @@ const groupedCommands = commands.reduce((acc, cmd) => {
   }
 
   function handleCommand(id: string | undefined) {
+    // Track command usage before closing
+    if (id) {
+      const searchQuery = searchInput?.value || '';
+      trackCommandPaletteUsed(id, searchQuery);
+    }
+
     closePalette();
 
     switch (id) {

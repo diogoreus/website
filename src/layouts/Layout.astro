@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { title, description = "Designer. Developer. Executive. AI Builder." } = Astro.props;
+const POSTHOG_API_KEY = import.meta.env.PUBLIC_POSTHOG_API_KEY;
 ---
 
 <!doctype html>
@@ -17,6 +18,13 @@ const { title, description = "Designer. Developer. Executive. AI Builder." } = A
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- PostHog Analytics -->
+    {POSTHOG_API_KEY && (
+      <script define:vars={{ POSTHOG_API_KEY }}>
+        window.__POSTHOG_API_KEY__ = POSTHOG_API_KEY;
+      </script>
+    )}
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
@@ -34,6 +42,15 @@ const { title, description = "Designer. Developer. Executive. AI Builder." } = A
     <div id="global-overlay-root"></div>
     <slot />
 
+    <script>
+      import { initPostHog } from '../scripts/analytics';
+
+      // Initialize PostHog if API key is available
+      const apiKey = (window as any).__POSTHOG_API_KEY__;
+      if (apiKey) {
+        initPostHog(apiKey);
+      }
+    </script>
   </body>
 </html>
 

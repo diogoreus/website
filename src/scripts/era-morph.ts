@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { trackEraChange, trackScrollMilestone } from './analytics';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -264,6 +265,9 @@ export function initEraMorph(): void {
   // Throttled scroll handler using requestAnimationFrame
   let ticking = false;
 
+  // Track previous era for analytics
+  let previousEra: string | null = null;
+
   const updateMorph = () => {
     const scrollProgress = getScrollProgress();
     const { from, to, localProgress } = getCurrentEraInfo(scrollProgress);
@@ -274,6 +278,15 @@ export function initEraMorph(): void {
     // Update morph era attribute for CSS-driven morphing
     const currentEra = getCurrentEraName(scrollProgress);
     document.documentElement.setAttribute('data-morph-era', currentEra);
+
+    // Track era changes for analytics
+    if (currentEra !== previousEra) {
+      trackEraChange(currentEra, scrollProgress);
+      previousEra = currentEra;
+    }
+
+    // Track scroll milestones
+    trackScrollMilestone(scrollProgress);
 
     ticking = false;
   };
