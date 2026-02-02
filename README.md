@@ -4,8 +4,6 @@ A personal portfolio showcasing a 15+ year career journey through four distinct 
 
 **[Live Site](https://diogoreus.me/)**
 
-![Portfolio Preview](./docs/preview.png)
-
 ## The Era Morphing System
 
 The site's standout feature is scroll-driven visual transformations between career phases:
