@@ -65,7 +65,7 @@ src/
 
 ## Author
 
-**Diogo Reus** - Designer, Developer, Executive, AI Builder
+**Diogo Reus**
 
 - [LinkedIn](https://linkedin.com/in/diogoreus)
 - [GitHub](https://github.com/diogoreus)
