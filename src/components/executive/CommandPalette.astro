@@ -347,12 +347,19 @@ const groupedCommands = commands.reduce((acc, cmd) => {
 </style>
 
 <script>
-  import { trackCommandPaletteOpened, trackCommandPaletteUsed } from '../../scripts/analytics';
+  import { trackCommandPaletteOpened, trackCommandPaletteUsed, trackEasterEggFound } from '../../scripts/analytics';
 
   const palette = document.getElementById('command-palette');
   const searchInput = document.getElementById('palette-search') as HTMLInputElement;
   const commandItems = document.querySelectorAll('.command-item');
   let selectedIndex = 0;
+
+  // Hidden easter egg commands
+  const hiddenCommands: Record<string, () => void> = {
+    'celebrate': triggerConfetti,
+    'stats for nerds': showStatsForNerds,
+    'panic': triggerPanic,
+  };
 
   // Toggle palette with Cmd+K / Ctrl+K
   document.addEventListener('keydown', (e) => {
@@ -435,6 +442,15 @@ const groupedCommands = commands.reduce((acc, cmd) => {
   }
 
   function executeCommand() {
+    // Check for hidden commands first
+    const searchValue = searchInput?.value.toLowerCase().trim() || '';
+    if (searchValue && hiddenCommands[searchValue]) {
+      closePalette();
+      hiddenCommands[searchValue]();
+      trackEasterEggFound(`cmd_${searchValue.replace(/ /g, '_')}`);
+      return;
+    }
+
     const visibleItems = getVisibleItems();
     const selected = visibleItems[selectedIndex] as HTMLElement;
     if (selected) {
@@ -500,4 +516,243 @@ const groupedCommands = commands.reduce((acc, cmd) => {
       handleCommand(commandId);
     });
   });
+
+  // Hidden command implementations
+  function triggerConfetti() {
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+    const confettiCount = 150;
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;overflow:hidden;';
+    document.body.appendChild(container);
+
+    for (let i = 0; i < confettiCount; i++) {
+      const confetti = document.createElement('div');
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const size = Math.random() * 10 + 5;
+      const startX = Math.random() * window.innerWidth;
+      const startY = -20;
+      const rotation = Math.random() * 360;
+      const duration = Math.random() * 2 + 2;
+      const delay = Math.random() * 0.5;
+
+      confetti.style.cssText = `
+        position:absolute;
+        width:${size}px;
+        height:${size}px;
+        background:${color};
+        left:${startX}px;
+        top:${startY}px;
+        transform:rotate(${rotation}deg);
+        border-radius:${Math.random() > 0.5 ? '50%' : '2px'};
+        animation:confettiFall ${duration}s ease-out ${delay}s forwards;
+      `;
+      container.appendChild(confetti);
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes confettiFall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(${window.innerHeight + 100}px) rotate(${720 + Math.random() * 360}deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+      container.remove();
+      style.remove();
+    }, 4000);
+  }
+
+  function showStatsForNerds() {
+    const loadTime = (performance.timing.loadEventEnd - performance.timing.navigationStart) / 1000;
+    const domSize = document.getElementsByTagName('*').length;
+    const memoryUsed = (performance as any).memory?.usedJSHeapSize
+      ? `${Math.round((performance as any).memory.usedJSHeapSize / 1024 / 1024)}MB`
+      : 'N/A';
+
+    const overlay = document.createElement('div');
+    overlay.innerHTML = `
+      <div class="stats-overlay">
+        <div class="stats-content">
+          <div class="stats-header">
+            <span class="stats-icon">🤓</span>
+            <span class="stats-title">Stats for Nerds</span>
+            <button class="stats-close">&times;</button>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Page Load</span>
+              <span class="stat-value">${loadTime.toFixed(2)}s</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">DOM Elements</span>
+              <span class="stat-value">${domSize.toLocaleString()}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Memory</span>
+              <span class="stat-value">${memoryUsed}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Framework</span>
+              <span class="stat-value">Astro + React</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Styling</span>
+              <span class="stat-value">Tailwind v4</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Animation</span>
+              <span class="stat-value">GSAP + Three.js</span>
+            </div>
+          </div>
+          <div class="stats-footer">Press Escape or click outside to close</div>
+        </div>
+      </div>
+    `;
+
+    const style = document.createElement('style');
+    style.textContent = `
+      .stats-overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 99999;
+        animation: fadeIn 0.2s ease;
+      }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .stats-content {
+        background: #1a1a1a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } }
+      .stats-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .stats-icon { font-size: 24px; }
+      .stats-title { flex: 1; font-size: 16px; font-weight: 600; color: #ededed; }
+      .stats-close {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.15s;
+      }
+      .stats-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .stat-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 12px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .stat-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
+      .stat-value { font-size: 14px; color: #ededed; font-weight: 500; }
+      .stats-footer {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 11px;
+        color: #666;
+      }
+    `;
+    document.head.appendChild(style);
+    document.body.appendChild(overlay);
+
+    const closeStats = () => {
+      overlay.remove();
+      style.remove();
+    };
+
+    overlay.querySelector('.stats-close')?.addEventListener('click', closeStats);
+    overlay.querySelector('.stats-overlay')?.addEventListener('click', (e) => {
+      if (e.target === overlay.querySelector('.stats-overlay')) closeStats();
+    });
+    const escHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeStats();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+  }
+
+  function triggerPanic() {
+    // Find all elements that look like metrics/counters in the executive section
+    const executiveSection = document.getElementById('era-executive');
+    if (!executiveSection) return;
+
+    const numberElements = executiveSection.querySelectorAll('[class*="counter"], [class*="metric"], [class*="number"], [class*="stat"]');
+    const originalValues: Map<Element, string> = new Map();
+
+    // Store original values and animate to zero
+    numberElements.forEach((el) => {
+      const textContent = el.textContent || '';
+      if (/\d/.test(textContent)) {
+        originalValues.set(el, textContent);
+        el.classList.add('panic-animate');
+      }
+    });
+
+    // Also animate any visible numbers in bento cards
+    const bentoCards = executiveSection.querySelectorAll('.bento-card, [class*="bento"]');
+    bentoCards.forEach((card) => {
+      const nums = card.querySelectorAll('span, div, p');
+      nums.forEach((el) => {
+        const text = el.textContent || '';
+        if (/^\$?\d[\d,\.]*[KMB%]?$/.test(text.trim())) {
+          originalValues.set(el, text);
+          (el as HTMLElement).style.transition = 'all 0.3s ease';
+          el.textContent = text.replace(/[\d,\.]+/, '0');
+        }
+      });
+    });
+
+    // Add panic animation style
+    const style = document.createElement('style');
+    style.textContent = `
+      .panic-animate {
+        animation: panicShake 0.1s linear infinite;
+      }
+      @keyframes panicShake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-2px); }
+        75% { transform: translateX(2px); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Restore after 2 seconds
+    setTimeout(() => {
+      originalValues.forEach((value, el) => {
+        el.textContent = value;
+        el.classList.remove('panic-animate');
+        (el as HTMLElement).style.transition = '';
+      });
+      style.remove();
+    }, 2000);
+  }
 </script>

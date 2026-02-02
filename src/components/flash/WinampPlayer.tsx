@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { trackWinampControl, trackWinampTrackChange, trackWinampInteraction } from '../../scripts/analytics';
+import { trackWinampControl, trackWinampTrackChange, trackWinampInteraction, trackEasterEggFound } from '../../scripts/analytics';
 
 interface Track {
   title: string;
@@ -26,6 +26,7 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
   const [userVolume, setUserVolume] = useState(0.75);
   const [spectrumData, setSpectrumData] = useState<number[]>(new Array(16).fill(20));
   const [hasAudio, setHasAudio] = useState(true);
+  const [visualizerMode, setVisualizerMode] = useState<'bars' | 'wave'>('bars');
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -236,6 +237,12 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
 
   const seekProgress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  const handleVisualizerDoubleClick = () => {
+    const newMode = visualizerMode === 'bars' ? 'wave' : 'bars';
+    setVisualizerMode(newMode);
+    trackEasterEggFound('winamp_visualizer', { mode: newMode });
+  };
+
   return (
     <div ref={containerRef} className={`winamp-player ${className}`}>
       <audio ref={audioRef} src={currentTrack.src} preload="metadata" />
@@ -283,14 +290,42 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
           </div>
 
           {/* Spectrum analyzer */}
-          <div className="spectrum-analyzer">
-            {spectrumData.map((height, i) => (
-              <div
-                key={i}
-                className="spectrum-bar"
-                style={{ height: `${height}%` }}
-              />
-            ))}
+          <div
+            className="spectrum-analyzer"
+            onDoubleClick={handleVisualizerDoubleClick}
+            title="Double-click to change visualizer"
+          >
+            {visualizerMode === 'bars' ? (
+              spectrumData.map((height, i) => (
+                <div
+                  key={i}
+                  className="spectrum-bar"
+                  style={{ height: `${height}%` }}
+                />
+              ))
+            ) : (
+              <svg className="spectrum-wave" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path
+                  d={`M 0,12 ${spectrumData.map((h, i) => {
+                    const x = (i / (spectrumData.length - 1)) * 100;
+                    const y = 12 - ((h - 50) / 100) * 24;
+                    return `L ${x},${Math.max(2, Math.min(22, y))}`;
+                  }).join(' ')}`}
+                  fill="none"
+                  stroke="url(#waveGradient)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <defs>
+                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#ffff00" />
+                    <stop offset="50%" stopColor="#88ff00" />
+                    <stop offset="100%" stopColor="#00ff00" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            )}
           </div>
         </div>
       </div>
@@ -523,6 +558,12 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
           background: #001100;
           padding: 2px;
           border-radius: 2px;
+          cursor: pointer;
+          transition: box-shadow 0.2s ease;
+        }
+
+        .spectrum-analyzer:hover {
+          box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
         }
 
         .spectrum-bar {
@@ -532,6 +573,21 @@ export default function WinampPlayer({ className = '' }: WinampPlayerProps) {
           transition: height 0.05s ease-out;
           box-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
           min-height: 15%;
+        }
+
+        .spectrum-wave {
+          width: 100%;
+          height: 100%;
+          filter: drop-shadow(0 0 3px rgba(0, 255, 0, 0.7));
+        }
+
+        .spectrum-wave path {
+          animation: wavePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes wavePulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.8; }
         }
 
         /* Seek bar */

@@ -666,6 +666,33 @@ Mission: Increase human agency through AI`,
   'sudo rm -rf /*': '__SHUTDOWN_EFFECT__',
   'sudo rm -rf / --no-preserve-root': '__SHUTDOWN_EFFECT__',
 
+  'rm -rf /': `Permission denied. Nice try though. 😏
+
+(Pro tip: Even with sudo, I wouldn't recommend this on a real system)`,
+
+  'rm -rf /*': `Permission denied. Nice try though. 😏`,
+
+  'matrix': '__MATRIX_EFFECT__',
+
+  'sl': `
+                              (  ) (@@) ( )  (@)  ()    @@    O     @     O     @      O
+                         (@@@)
+                     (    )
+                  (@@@@)
+               (   )
+    ====        ________                ___________
+_D _|  |_______/        \\__I_I_____===__|_________|
+ |(_)---  |   H\\________/ |   |        =|___ ___|      _________________
+ /     |  |   H  |  |     |   |         ||_| |_||     _|                \\_____A
+|      |  |   H  |__--------------------| [___] |   =|                        |
+| ________|___H__/__|_____/[][]~\\_______|       |   -|                        |
+|/ |   |-----------I_____I [][] []  D   |=======|____|________________________|_
+__/ =| o |=-~~\\  /~~\\  /~~\\  /~~\\ ____Y___________|__|__________________________|_
+ |/-=|___|=    ||    ||    ||    |_____/~\\___/          |_D__D__D_|  |_D__D__D_|
+  \\_/      \\O=====O=====O=====O_/      \\_/               \\_/   \\_/    \\_/   \\_/
+
+🚂 Choo choo! You found the classic Unix typo easter egg!`,
+
   pwd: `/home/diogo/projects/applique`,
 
   date: new Date().toString(),
@@ -929,16 +956,71 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
   ]);
   const [input, setInput] = useState('');
   const [showHint, setShowHint] = useState(false);
+  const [matrixActive, setMatrixActive] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const matrixCanvasRef = useRef<HTMLCanvasElement>(null);
+  const matrixAnimationRef = useRef<number>(0);
   const hintText = 'sudo rm -rf /';
+
+  // Matrix rain effect
+  const startMatrixEffect = useCallback(() => {
+    setMatrixActive(true);
+
+    // Let the canvas render first
+    setTimeout(() => {
+      const canvas = matrixCanvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Set canvas size
+      const rect = canvas.parentElement?.getBoundingClientRect();
+      canvas.width = rect?.width || 400;
+      canvas.height = rect?.height || 150;
+
+      const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+      const columns = Math.floor(canvas.width / 14);
+      const drops: number[] = new Array(columns).fill(1);
+
+      const draw = () => {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0f0';
+        ctx.font = '12px monospace';
+
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(text, i * 14, drops[i] * 14);
+
+          if (drops[i] * 14 > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+
+        matrixAnimationRef.current = requestAnimationFrame(draw);
+      };
+
+      draw();
+
+      // Stop after 5 seconds
+      setTimeout(() => {
+        cancelAnimationFrame(matrixAnimationRef.current);
+        setMatrixActive(false);
+        setHistory(h => [...h, { type: 'output', content: '\n🔴 Matrix connection terminated.\n' }]);
+      }, 5000);
+    }, 50);
+  }, []);
 
   const processCommand = useCallback((cmd: string) => {
     const trimmedCmd = cmd.trim().toLowerCase();
     const newHistory = [...history, { type: 'input' as const, content: `$ ${cmd}` }];
 
     // Define easter egg commands
-    const easterEggCommands = ['sudo rm -rf /', 'sudo rm -rf /*', 'sudo rm -rf / --no-preserve-root', 'hire diogo', 'coffee'];
+    const easterEggCommands = ['sudo rm -rf /', 'sudo rm -rf /*', 'sudo rm -rf / --no-preserve-root', 'hire diogo', 'coffee', 'matrix', 'sl', 'rm -rf /', 'rm -rf /*'];
 
     if (trimmedCmd === 'clear') {
       setHistory([]);
@@ -964,11 +1046,27 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
       return;
     }
 
+    // Check for matrix effect trigger
+    if (output === '__MATRIX_EFFECT__') {
+      trackEasterEggFound('matrix_terminal');
+      setHistory([...newHistory, { type: 'output', content: 'Initiating Matrix...' }]);
+      setInput('');
+      // Start the matrix rain effect in the terminal
+      setTimeout(() => {
+        startMatrixEffect();
+      }, 300);
+      return;
+    }
+
     // Track specific easter eggs
     if (trimmedCmd === 'hire diogo') {
       trackEasterEggFound('hire_diogo');
     } else if (trimmedCmd === 'coffee') {
       trackEasterEggFound('coffee');
+    } else if (trimmedCmd === 'sl') {
+      trackEasterEggFound('sl_train');
+    } else if (trimmedCmd === 'rm -rf /' || trimmedCmd === 'rm -rf /*') {
+      trackEasterEggFound('rm_rf_no_sudo');
     }
 
     if (!output) {
@@ -1023,31 +1121,45 @@ function InteractiveTerminal({ onShutdown }: { onShutdown?: () => void }) {
 
   return (
     <div className="terminal-body" ref={terminalRef} onClick={focusInput}>
+      {matrixActive && (
+        <canvas
+          ref={matrixCanvasRef}
+          className="matrix-canvas"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 10,
+            background: '#000',
+          }}
+        />
+      )}
       {history.map((item, i) => (
         <div key={i} className={`terminal-line ${item.type}`}>
           <pre>{item.content}</pre>
         </div>
       ))}
-      <div className="terminal-input-line">
-        <span className="terminal-prompt">$</span>
-        <div className="terminal-input-wrapper">
-          <input
-            ref={inputRef}
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setShowHint(true)}
-            onBlur={() => setShowHint(false)}
-            className="terminal-input"
-            autoComplete="off"
-            spellCheck={false}
-          />
-          {showHint && input === '' && (
-            <span className="terminal-hint">{hintText}</span>
-          )}
+      {!matrixActive && (
+        <div className="terminal-input-line">
+          <span className="terminal-prompt">$</span>
+          <div className="terminal-input-wrapper">
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setShowHint(true)}
+              onBlur={() => setShowHint(false)}
+              className="terminal-input"
+              autoComplete="off"
+              spellCheck={false}
+            />
+            {showHint && input === '' && (
+              <span className="terminal-hint">{hintText}</span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -1742,6 +1854,11 @@ export default function IDEComponent() {
           overflow-y: auto;
           font-size: 0.8rem;
           cursor: text;
+          position: relative;
+        }
+
+        .matrix-canvas {
+          image-rendering: pixelated;
         }
 
         .terminal-line {

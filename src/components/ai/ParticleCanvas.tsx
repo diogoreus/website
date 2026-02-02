@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
+import { trackEasterEggFound } from '../../scripts/analytics';
 
 interface ParticleCanvasProps {
   className?: string;
@@ -16,6 +17,10 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
   const frameRef = useRef<number>(0);
   const mouseRef = useRef({ x: 0, y: 0, target: { x: 0, y: 0 } });
   const scrollRef = useRef(0);
+  const idleTimeRef = useRef(0);
+  const lastMouseMoveRef = useRef(Date.now());
+  const convergenceStateRef = useRef<'idle' | 'converging' | 'exploding' | 'normal'>('normal');
+  const convergenceTriggeredRef = useRef(false);
 
   const createParticles = useCallback((scene: THREE.Scene, renderer: THREE.WebGLRenderer) => {
     const particleCount = window.innerWidth < 768 ? 3000 : 8000;
@@ -76,6 +81,8 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
         pixelRatio: { value: renderer.getPixelRatio() },
         mousePos: { value: new THREE.Vector2(0, 0) },
         scrollProgress: { value: 0 },
+        convergenceStrength: { value: 0.0 },
+        explosionStrength: { value: 0.0 },
       },
       vertexShader: `
         attribute float size;
@@ -87,6 +94,8 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
         uniform float pixelRatio;
         uniform vec2 mousePos;
         uniform float scrollProgress;
+        uniform float convergenceStrength;
+        uniform float explosionStrength;
 
         // Noise function for organic movement
         float noise(vec3 p) {
@@ -107,12 +116,31 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
           pos.y += wave2 + velocity.y * time * 10.0;
           pos.z += wave3 + velocity.z * time * 10.0;
 
-          // Mouse repulsion effect
+          // Mouse repulsion effect (disabled during convergence/explosion)
           vec4 worldPos = modelMatrix * vec4(pos, 1.0);
           vec2 screenPos = worldPos.xy / worldPos.w;
           float mouseDist = length(screenPos - mousePos * 50.0);
-          float mouseInfluence = smoothstep(30.0, 0.0, mouseDist);
+          float mouseInfluence = smoothstep(30.0, 0.0, mouseDist) * (1.0 - convergenceStrength - explosionStrength);
           pos.xy += normalize(screenPos - mousePos * 50.0) * mouseInfluence * 5.0;
+
+          // Convergence effect - particles attract to mouse position
+          if (convergenceStrength > 0.0) {
+            vec3 targetPos = vec3(mousePos.x * 50.0, mousePos.y * 30.0, 0.0);
+            vec3 toTarget = targetPos - pos;
+            float dist = length(toTarget);
+            vec3 attractDir = normalize(toTarget);
+            // Stronger attraction as convergence increases, with slight randomness
+            float attractForce = convergenceStrength * min(dist * 0.8, 30.0);
+            pos += attractDir * attractForce * (0.8 + noise(position) * 0.4);
+          }
+
+          // Explosion effect - particles scatter outward
+          if (explosionStrength > 0.0) {
+            vec3 center = vec3(mousePos.x * 50.0, mousePos.y * 30.0, 0.0);
+            vec3 awayDir = normalize(pos - center + vec3(0.001)); // avoid zero vector
+            float explosionForce = explosionStrength * 80.0 * (0.5 + noise(position) * 1.0);
+            pos += awayDir * explosionForce;
+          }
 
           // Breathing effect based on scroll
           float breathe = sin(time * 0.5 + scrollProgress * 6.28) * 0.1 + 1.0;
@@ -264,6 +292,13 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
       if (!interactive) return;
       mouseRef.current.target.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.target.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      lastMouseMoveRef.current = Date.now();
+
+      // Reset convergence if mouse moves during convergence
+      if (convergenceStateRef.current === 'converging') {
+        convergenceStateRef.current = 'normal';
+        (material.uniforms.convergenceStrength as { value: number }).value = 0;
+      }
     };
 
     // Scroll tracking
@@ -284,8 +319,56 @@ export default function ParticleCanvas({ className = '', interactive = true }: P
       frameRef.current = requestAnimationFrame(animate);
 
       const time = Date.now() * 0.001;
+      const now = Date.now();
       (material.uniforms.time as { value: number }).value = time;
       (material.uniforms.scrollProgress as { value: number }).value = scrollRef.current;
+
+      // Track idle time
+      const idleTime = (now - lastMouseMoveRef.current) / 1000;
+
+      // Check if we should start convergence (10 seconds idle, AI section visible)
+      if (idleTime >= 10 && convergenceStateRef.current === 'normal' && !convergenceTriggeredRef.current && scrollRef.current > 0.3) {
+        convergenceStateRef.current = 'converging';
+        convergenceTriggeredRef.current = true;
+        trackEasterEggFound('particle_convergence');
+      }
+
+      // Handle convergence animation
+      const convergenceUniform = material.uniforms.convergenceStrength as { value: number };
+      const explosionUniform = material.uniforms.explosionStrength as { value: number };
+
+      if (convergenceStateRef.current === 'converging') {
+        // Gradually increase convergence over 4 seconds
+        convergenceUniform.value = Math.min(convergenceUniform.value + 0.004, 1.0);
+
+        // After reaching full convergence, trigger explosion
+        if (convergenceUniform.value >= 1.0) {
+          setTimeout(() => {
+            convergenceStateRef.current = 'exploding';
+            convergenceUniform.value = 0;
+          }, 500);
+        }
+      } else if (convergenceStateRef.current === 'exploding') {
+        // Quick explosion
+        explosionUniform.value = Math.min(explosionUniform.value + 0.05, 1.0);
+
+        if (explosionUniform.value >= 1.0) {
+          // Decay explosion and return to normal
+          setTimeout(() => {
+            convergenceStateRef.current = 'normal';
+            // Allow re-triggering after 30 seconds
+            setTimeout(() => {
+              convergenceTriggeredRef.current = false;
+            }, 30000);
+          }, 200);
+        }
+      } else {
+        // Decay both uniforms when normal
+        convergenceUniform.value *= 0.95;
+        explosionUniform.value *= 0.92;
+        if (convergenceUniform.value < 0.01) convergenceUniform.value = 0;
+        if (explosionUniform.value < 0.01) explosionUniform.value = 0;
+      }
 
       // Smooth mouse following
       mouseRef.current.x += (mouseRef.current.target.x - mouseRef.current.x) * 0.05;
